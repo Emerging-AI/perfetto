@@ -1,0 +1,52 @@
+
+import("../../../gn/fuzzer.gni")
+import("../../../gn/perfetto.gni")
+import("../../../gn/test.gni")
+
+assert(enable_perfetto_traced_dbg_demo)
+
+executable("demod") {
+  deps = [
+    ":demod_main",
+    "../../../gn:default_deps",
+  ]
+  sources = [ "main.cc" ]
+}
+
+source_set("demod_main") {
+  deps = [
+    "../../../gn:default_deps",
+    # "../../../protos/perfetto/trace:zero",
+    "../../../src/base",
+    "../../../src/base:unix_socket",
+    "../../../src/profiling/dbg_demo:daemon",
+    # "../../../src/profiling/memory:wire_protocol",
+    "../../../src/tracing/ipc/producer",
+  ]
+  sources = [
+    "demod.cc",
+    "demod.h",
+  ]
+}
+
+
+source_set("daemon") {
+  deps = [
+    "../../../gn:default_deps",
+    "../../../protos/perfetto/config/profiling:cpp",
+    "../../base",
+    "../../base:unix_socket",
+    "../../tracing/core",
+    "../../tracing/ipc/producer",
+  ]
+  public_deps = [
+    "../../../protos/perfetto/config/profiling:cpp",
+    # "../../../protos/perfetto/trace:zero",
+    # "../../../protos/perfetto/trace/interned_data:zero",
+    # "../../../protos/perfetto/trace/profiling:zero",
+  ]
+  sources = [
+    "demod_producer.cc",
+    "demod_producer.h",
+  ]
+}

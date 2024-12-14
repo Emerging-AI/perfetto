@@ -88,6 +88,10 @@ if (enable_perfetto_traced_perf) {
   all_targets += [ "src/profiling/perf:traced_perf" ]
 }
 
+if (enable_perfetto_traced_dbg_demo) {
+  all_targets += [ "src/profiling/dbg_demo:demod" ]
+}
+
 if (perfetto_build_with_android) {
   all_targets += [ "src/android_internal:libperfetto_android_internal" ]
 }

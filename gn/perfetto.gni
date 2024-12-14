@@ -170,6 +170,13 @@ declare_args() {
       (perfetto_build_standalone && is_clang &&
        (is_linux || (is_android && android_api_level >= 29)))
 
+  # for dev
+  enable_perfetto_traced_dbg_demo = 
+      perfetto_build_with_android ||
+      (perfetto_build_standalone && is_clang &&
+       (is_linux || (is_android && android_api_level >= 29)))
+
+
   # The Trace Processor: offline analytical engine to process traces and compute
   # metrics using a SQL engine.
   if (!defined(enable_perfetto_trace_processor)) {

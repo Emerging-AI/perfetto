@@ -1,0 +1,15 @@
+
+syntax = "proto2";
+
+
+package perfetto.protos;
+
+// Next ID: 2
+message ProfileDemodPacket {
+
+  repeated MyInfoSamples myinfos_dumps = 1;
+  message MyInfoSamples {
+    optional uint64 gpu_freq_counter = 1;
+  }
+
+}

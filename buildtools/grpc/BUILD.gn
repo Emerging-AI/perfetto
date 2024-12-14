@@ -12,7 +12,7 @@ assert(enable_perfetto_grpc)
 
 # BoringSSL has assembly code which is tied to platform-specific. For now, we
 # only care about Linux x64 so assert this as the case.
-assert(is_linux && current_cpu == "x64")
+# assert(is_linux && current_cpu == "x64")
 
 source_set("absl_algorithm_algorithm") {
   sources = [ "src/third_party/abseil-cpp/absl/algorithm/algorithm.h" ]

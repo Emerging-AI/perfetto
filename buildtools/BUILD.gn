@@ -1579,6 +1579,9 @@ if (enable_perfetto_grpc) {
         "-Wno-return-type",
       ]
     }
+    if (is_mac) {
+      ldflags = [ "-framework", "CoreFoundation" ]
+    }
   }
 
   config("grpc_gen_config") {

@@ -50,8 +50,10 @@ import "protos/perfetto/config/test_config.proto";
 import "protos/perfetto/config/track_event/track_event_config.proto";
 import "protos/perfetto/config/system_info/system_info.proto";
 
+import "protos/perfetto/config/profiling/demod_config.proto";
+
 // The configuration that is passed to each data source when starting tracing.
-// Next id: 131
+// Next id: 132
 message DataSourceConfig {
   enum SessionInitiator {
     SESSION_INITIATOR_UNSPECIFIED = 0;
@@ -152,6 +154,10 @@ message DataSourceConfig {
   optional StatsdTracingConfig statsd_tracing_config = 117 [lazy = true];
   // Data source name: linux.system_info
   optional SystemInfoConfig system_info_config = 119;
+  // Data source name: perfetto.demod
+  optional DemodConfig demod_config = 131 [lazy = true];
+
+
 
   // Chrome is special as it doesn't use the perfetto IPC layer. We want to
   // avoid proto serialization and de-serialization there because that would
