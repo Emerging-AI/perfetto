@@ -661,6 +661,8 @@ def main(argv):
 
   perfetto_cmd = ('CFG=\'{cfg}\'; echo ${{CFG}} | '
                   'perfetto --txt -c - -o ' + profile_device_path + ' -d')
+  
+  
 
   if args.disable_selinux:
     enforcing = subprocess.check_output(['adb', 'shell',
@@ -694,6 +696,7 @@ def main(argv):
         "Output directory {} not empty".format(profile_target), file=sys.stderr)
     return 1
 
+  print("perfetto_cmd:", perfetto_cmd.format(cfg=cfg))
   perfetto_pid = subprocess.check_output(
       ['adb', 'exec-out', perfetto_cmd.format(cfg=cfg)]).strip()
   try:
