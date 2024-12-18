@@ -1,0 +1,17 @@
+
+
+https://juejin.cn/post/7446716991329779721#heading-1
+
+一些渲染相关的问题
+带着问题和思考进行学习和探索，是一种高效的学习方式。关于Android渲染方面有下面几个问题，可以看看自己是否有答案
+
+invalidate和requestlayout对后续绘制渲染有什么不同？
+为什么View刚被加载时想获取其的宽高,需要view.post(Runnalbe)中获取?
+黄油计划提出的Vsync和三缓冲机制为什可以大大改善Android的交互和流畅度体验？
+Vsync信号是谁发出的？需要App主动请求吗？界面没有变化是否会有Vsync信号？App是否响应Vsync信号取决于什么？
+调用android绘制三部曲（measure、layout和draw）的performTraversals是怎么触发的？
+Android的同步屏障和异步消息是什么，它们如何在渲染机制中发挥作用的？
+SurfaceView/TextureView渲染视频时频繁的刷新界面，为什么UI界面不卡顿？
+android 5.0引入的硬件加速RenderThread是如何提升渲染效率的？指令归类重排序是什么？
+动画可以在RenderThread上执行吗
+

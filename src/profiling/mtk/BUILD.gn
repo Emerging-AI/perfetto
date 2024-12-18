@@ -1,0 +1,52 @@
+
+import("../../../gn/fuzzer.gni")
+import("../../../gn/perfetto.gni")
+import("../../../gn/test.gni")
+
+
+assert(enable_perfetto_mtk_dimprofd)
+
+executable("dimprofd") {
+  deps = [
+    ":dimprofd_main",
+    "../../../gn:default_deps",
+  ]
+  sources = [ "main.cc" ]
+}
+
+
+source_set("dimprofd_main") {
+  deps = [
+    "../../../gn:default_deps",
+    # "../../../protos/perfetto/trace:zero",
+    "../../../src/base",
+    "../../../src/base:version",
+    "../../../src/base:unix_socket",
+    "../../../src/profiling/mtk:daemon",
+    # "../../../src/profiling/memory:wire_protocol",
+    "../../../src/tracing/ipc/producer",
+  ]
+  sources = [
+    "dimprofd.cc",
+    "dimprofd.h",
+  ]
+}
+
+source_set("daemon") {
+  deps = [
+    "../../../gn:default_deps",
+    "../../../protos/perfetto/config/profiling:cpp",
+    "../../base",
+    "../../base:unix_socket",
+    "../../tracing/core",
+    "../../tracing/ipc/producer",
+  ]
+  public_deps = [
+    "../../../protos/perfetto/config/profiling:cpp",
+
+  ]
+  sources = [
+    "dimprofd_producer.cc",
+    "dimprofd_producer.h",
+  ]
+}

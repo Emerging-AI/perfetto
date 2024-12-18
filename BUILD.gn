@@ -92,6 +92,10 @@ if (enable_perfetto_traced_dbg_demo) {
   all_targets += [ "src/profiling/dbg_demo:demod" ]
 }
 
+if (enable_perfetto_mtk_dimprofd) {
+  all_targets += [ "src/profiling/mtk:dimprofd" ]
+} 
+
 if (perfetto_build_with_android) {
   all_targets += [ "src/android_internal:libperfetto_android_internal" ]
 }
