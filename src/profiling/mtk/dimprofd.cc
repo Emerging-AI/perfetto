@@ -6,6 +6,9 @@
 #include "perfetto/ext/base/getopt.h"
 #include "perfetto/ext/base/unix_task_runner.h"
 #include "perfetto/ext/base/version.h"
+#include "perfetto/tracing/default_socket.h"
+
+#include "src/profiling/mtk/dimprofd_producer.h"
 
 namespace perfetto {
 namespace profiling {
@@ -61,6 +64,10 @@ int DimprofdMain(int argc, char** argv) {
 
   PERFETTO_LOG("Starting %s service", argv[0]);
   base::UnixTaskRunner task_runner;
+
+  DimprofdProducer producer;
+
+  producer.ConnectWithRetries(GetProducerSocket(), &task_runner);
 
   task_runner.Run();
   return 0;

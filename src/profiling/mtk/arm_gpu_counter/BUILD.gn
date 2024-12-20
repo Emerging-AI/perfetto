@@ -1,0 +1,33 @@
+import("../../../../gn/test.gni")
+
+
+
+source_set("arm_gpu_counter") {
+  public_deps = [ "../../../tracing/core" ]
+  deps = [
+    "..:data_source",
+    "../../../../gn:default_deps",
+    "../../../../include/perfetto/ext/traced",
+    "../../../../protos/perfetto/trace:zero",
+    # "../../../../protos/perfetto/trace/arm_gpu_counter:zero",
+    "../../../base",
+  ]
+  sources = [
+    "arm_gpu_counter_data_source.cc",
+    "arm_gpu_counter_data_source.h",
+  ]
+}
+
+
+# perfetto_unittest_source_set("unittests") {
+#   testonly = true
+#   deps = [
+#     ":arm_gpu_counter",
+#     "../../../../gn:default_deps",
+#     "../../../../gn:gtest_and_gmock",
+#     "../../../../protos/perfetto/trace/arm_gpu_counter:cpp",
+#     "../../../../src/tracing/test:test_support",
+#     "../common:test_support",
+#   ]
+#   sources = [ "arm_gpu_counter_data_source_unittest.cc" ]
+# }

@@ -21,5 +21,6 @@ perfetto_proto_library("@TYPE@") {
     "java_hprof_config.proto",
     "perf_event_config.proto",
     "demod_config.proto",
+    "arm_gpu_counter_config.proto",
   ]
 }

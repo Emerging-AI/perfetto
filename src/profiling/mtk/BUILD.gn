@@ -32,14 +32,17 @@ source_set("dimprofd_main") {
   ]
 }
 
+
 source_set("daemon") {
   deps = [
+    ":data_source",
     "../../../gn:default_deps",
     "../../../protos/perfetto/config/profiling:cpp",
     "../../base",
     "../../base:unix_socket",
     "../../tracing/core",
     "../../tracing/ipc/producer",
+    "arm_gpu_counter",
   ]
   public_deps = [
     "../../../protos/perfetto/config/profiling:cpp",
@@ -48,5 +51,16 @@ source_set("daemon") {
   sources = [
     "dimprofd_producer.cc",
     "dimprofd_producer.h",
+  ]
+}
+
+source_set("data_source") {
+  deps = [
+    "../../../gn:default_deps",
+    "../../tracing/core",
+  ]
+  sources = [
+    "dimprofd_data_source.cc",
+    "dimprofd_data_source.h",
   ]
 }

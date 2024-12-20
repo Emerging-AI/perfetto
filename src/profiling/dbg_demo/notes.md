@@ -1,7 +1,7 @@
 
 
 tools/gn args out/traced_dbg_demo --export-compile-commands
-
+tools/gn gen out/traced_dbg_demo --export-compile-commands
 
 tools/gn ls out/traced_dbg_demo
 
@@ -81,6 +81,24 @@ CFG='buffers {
 data_sources {
   config {
     name: "perfetto.demod"
+  }
+}
+
+duration_ms: 0
+write_into_file: true
+flush_timeout_ms: 30000
+flush_period_ms: 604800000
+
+'; echo ${CFG} | perfetto --txt -c - -o /data/misc/perfetto-traces/profile-000000 -d
+
+
+CFG='buffers {
+  size_kb: 63488
+}
+
+data_sources {
+  config {
+    name: "linux.arm_gpu_counter"
   }
 }
 

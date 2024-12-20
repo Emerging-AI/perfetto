@@ -1,0 +1,10 @@
+
+syntax = "proto2";
+
+package perfetto.protos;
+
+// Configuration for the demod profiler.
+// Next id: 2
+message ArmGpuCounterConfig {
+    optional uint32 gpu_freq_read_period_ms = 1;
+}

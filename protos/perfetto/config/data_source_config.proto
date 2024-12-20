@@ -51,9 +51,10 @@ import "protos/perfetto/config/track_event/track_event_config.proto";
 import "protos/perfetto/config/system_info/system_info.proto";
 
 import "protos/perfetto/config/profiling/demod_config.proto";
+import "protos/perfetto/config/profiling/arm_gpu_counter_config.proto";
 
 // The configuration that is passed to each data source when starting tracing.
-// Next id: 132
+// Next id: 133
 message DataSourceConfig {
   enum SessionInitiator {
     SESSION_INITIATOR_UNSPECIFIED = 0;
@@ -156,6 +157,7 @@ message DataSourceConfig {
   optional SystemInfoConfig system_info_config = 119;
   // Data source name: perfetto.demod
   optional DemodConfig demod_config = 131 [lazy = true];
+  optional ArmGpuCounterConfig arm_gpu_counter_config = 132 [lazy = true];
 
 
 
