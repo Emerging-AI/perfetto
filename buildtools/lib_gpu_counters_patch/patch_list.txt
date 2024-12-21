@@ -1,0 +1,1 @@
+hwcpipe/include/hwcpipe/detail/internal_types.hpp,internal_types.hpp.patch

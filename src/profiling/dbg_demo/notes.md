@@ -36,6 +36,8 @@ tools/ninja -C out/traced_dbg_demo -t targets | grep unittests
 tools/ninja -C out/traced_dbg_demo src/profiling/memory:unittests
 
 
+tools/ninja -C out/traced_dbg_demo lib_gpu_counters_device_private
+
 ----
 perfetto % tools/gn args --list out/traced_dbg_demo | grep -C 5 enable_perfetto_unittests 
 
@@ -108,3 +110,15 @@ flush_timeout_ms: 30000
 flush_period_ms: 604800000
 
 '; echo ${CFG} | perfetto --txt -c - -o /data/misc/perfetto-traces/profile-000000 -d
+
+
+
+
+adb -s 0123456789ABCDEF push out/traced_dbg_demo/lib_gpu_counters_api_example /data/local/tmp
+
+adb -s 0123456789ABCDEF shell /data/local/tmp/lib_gpu_counters_api_example
+
+
+adb push out/traced_dbg_demo/lib_gpu_counters_api_example /data/local/tmp
+
+adb shell /data/local/tmp/lib_gpu_counters_api_example

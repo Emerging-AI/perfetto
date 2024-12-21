@@ -1627,3 +1627,96 @@ if (enable_perfetto_grpc) {
     deps = [ "//gn:default_deps" ]
   }
 }
+
+if (enable_perfetto_mtk_dimprofd) {
+  config("lib_gpu_counters_device_config") {
+    visibility = _buildtools_visibility
+    include_dirs = [
+        "lib_gpu_counters/backend/device/src", 
+        "lib_gpu_counters/backend/device/include", 
+    ]
+    defines = [
+      "HWCPIPE_DEVICE_BUILDING=1",
+    ]
+  }
+
+  source_set("lib_gpu_counters_device") {
+    visibility = _buildtools_visibility
+    sources = [
+      "lib_gpu_counters/backend/device/src/device/handle.cpp",
+      "lib_gpu_counters/backend/device/src/device/hwcnt/backend_type.cpp",
+      "lib_gpu_counters/backend/device/src/device/hwcnt/reader.cpp",
+      "lib_gpu_counters/backend/device/src/device/hwcnt/sampler/detail/backend.cpp",
+      "lib_gpu_counters/backend/device/src/device/hwcnt/sampler/kinstr_prfcnt/block_index_remap.cpp",
+      "lib_gpu_counters/backend/device/src/device/hwcnt/sampler/kinstr_prfcnt/enum_info_parser.cpp",
+      "lib_gpu_counters/backend/device/src/device/hwcnt/sampler/kinstr_prfcnt/metadata_parser.cpp",
+      "lib_gpu_counters/backend/device/src/device/instance.cpp",
+      "lib_gpu_counters/backend/device/src/device/num_exec_engines.cpp",
+      "lib_gpu_counters/backend/device/src/device/product_id.cpp",
+    ]
+    configs -= [ "//gn/standalone:extra_warnings" ]
+    public_configs = [
+      ":lib_gpu_counters_device_config",
+    ]
+    deps = [
+      "//gn:default_deps",
+    ]
+  }
+
+  action("lib_gpu_counters_apply_patch") {
+    script = "lib_gpu_counters_patch/apply_patch.py"
+    outputs = [ "$root_gen_dir/lib_gpu_counters_patch/apply_patch.out" ]
+  }
+
+  config("lib_gpu_counters_hwcpipe_config") {
+    visibility = _buildtools_visibility
+    include_dirs = [
+      "lib_gpu_counters/hwcpipe/include", 
+      "lib_gpu_counters/hwcpipe/src", 
+    ]
+  }
+
+  source_set("lib_gpu_counters_hwcpipe") {
+    visibility = _buildtools_visibility
+    sources = [
+      "lib_gpu_counters/hwcpipe/src/error.cpp",
+      "lib_gpu_counters/hwcpipe/src/hwcpipe/detail/counter_database.cpp",
+      "lib_gpu_counters/hwcpipe/src/hwcpipe/all_gpu_counters.cpp",
+      "lib_gpu_counters/hwcpipe/src/hwcpipe/counter_metadata.cpp",
+      "lib_gpu_counters/hwcpipe/src/hwcpipe/derived_functions.cpp",
+    ]
+    configs -= [ "//gn/standalone:extra_warnings" ]
+    public_configs = [
+      ":lib_gpu_counters_hwcpipe_config",
+      ":lib_gpu_counters_device_config",
+    ]
+    deps = [
+      "//gn:default_deps",
+      ":lib_gpu_counters_device",
+      ":lib_gpu_counters_apply_patch"
+     ]
+  }
+
+  # config("lib_gpu_counters_api_example_config") {
+  #   visibility = _buildtools_visibility
+  #   cflags = [
+  #     "-Werror",
+  #     "-Wswitch-default",
+  #     "-Wswitch-enum",
+  #     "-Wreorder-ctor"
+  #   ]
+  # }
+
+  # executable("lib_gpu_counters_api_example") {
+  #   sources = [
+  #     "lib_gpu_counters/examples/api_example.cpp",
+  #   ]
+  #   public_configs = [
+  #     ":lib_gpu_counters_api_example_config",
+  #   ]
+  #   deps = [
+  #     ":lib_gpu_counters_hwcpipe",
+  #   ]
+  # }
+
+} 
