@@ -4680,6 +4680,7 @@ perfetto_proto_library(
         "protos/perfetto/config/stress_test_config.proto",
         "protos/perfetto/config/test_config.proto",
         "protos/perfetto/config/trace_config.proto",
+        "protos/perfetto/config/profiling/demod_config.proto",
     ],
     visibility = [
         PERFETTO_CONFIG.proto_library_visibility,
@@ -5605,6 +5606,7 @@ perfetto_proto_library(
         "protos/perfetto/trace/trace_packet.proto",
         "protos/perfetto/trace/trace_packet_defaults.proto",
         "protos/perfetto/trace/ui_state.proto",
+        "protos/perfetto/trace/profiling/profile_demod_packet.proto",
     ],
     visibility = [
         PERFETTO_CONFIG.proto_library_visibility,
