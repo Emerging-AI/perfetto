@@ -1,0 +1,35 @@
+--- a/hwcpipe/include/hwcpipe/sampler.hpp
++++ b/hwcpipe/include/hwcpipe/sampler.hpp
+@@ -371,6 +371,16 @@ class sampler : private detail::expression::context {
+         sampler_ = std::move(sampler);
+     }
+ 
++    explicit sampler(const sampler_config* config) : sampler(*config) {
++        assert(config != nullptr);
++    }
++
++    sampler(sampler&&) = default;
++    sampler& operator=(sampler&&) = default;
++
++    sampler(const sampler&) = delete;
++    sampler& operator=(const sampler&) = delete;
++
+     operator bool() const { return !ec_; }
+ 
+     /**
+@@ -525,6 +535,15 @@ class sampler : private detail::expression::context {
+         return sample_iterable<type>(*this, counter_to_buffer_pos_.begin(), counter_to_buffer_pos_.end());
+     }
+ 
++    /**
++     * @brief Destructor that ensures sampling is stopped when the sampler is destroyed
++     */
++    virtual ~sampler() noexcept {
++        if (sampling_in_progress_) {
++            [[maybe_unused]] auto ec = stop_sampling();
++        }
++    }
++
+   private:
+     /* holds the mapping from a block offset to a position in the sample buffer */
+     struct offset_to_buffer_pos {

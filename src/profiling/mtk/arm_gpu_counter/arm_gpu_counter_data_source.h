@@ -8,6 +8,15 @@
 #include "perfetto/ext/tracing/core/trace_writer.h"
 #include "src/profiling/mtk/dimprofd_data_source.h"
 
+#include <device/product_id.hpp>
+#include <hwcpipe/counter_database.hpp>
+#include <hwcpipe/gpu.hpp>
+#include <hwcpipe/sampler.hpp>
+
+#include <iomanip>
+
+#include <unistd.h>
+
 namespace perfetto {
 
 namespace base {
@@ -37,7 +46,12 @@ class ArmGpuCounterDataSource : public DimprofdDataSource {
  private:
   static void Tick(base::WeakPtr<ArmGpuCounterDataSource>);
 
-  void ReadGpuCounter();  // Virtual for testing.
+  void ReadGpuSampler();  // Virtual for testing.
+  void ReadGpuCounters();  // Virtual for testing.
+  // hwcpipe::sampler<> arm_sampler_;
+  std::unique_ptr<hwcpipe::sampler<>> arm_sampler_ = nullptr;
+  std::unique_ptr<hwcpipe::sampler_config> arm_sampler_config_ = nullptr;
+  uint32_t arm_counter_size_ = 0;
 
   base::TaskRunner* const task_runner_;
   std::unique_ptr<TraceWriter> writer_;
