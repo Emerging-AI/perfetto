@@ -119,7 +119,7 @@ write_into_file: true
 flush_timeout_ms: 30000
 flush_period_ms: 604800000
 
-'; echo ${CFG} | /data/local/tmp/perfetto --txt -c - -o /data/misc/perfetto-traces/profile-000001 -d
+'; echo ${CFG} | /data/local/tmp/perfetto --txt -c - -o /data/misc/perfetto-traces/profile-000004 -d
 
 
 

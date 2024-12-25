@@ -30,6 +30,7 @@
 #include "src/trace_processor/importers/proto/translation_table_module.h"
 #include "src/trace_processor/importers/proto/v8_module.h"
 #include "src/trace_processor/importers/proto/winscope/winscope_module.h"
+#include "src/trace_processor/importers/proto/dimprofd_probes_module.h"
 
 namespace perfetto {
 namespace trace_processor {
@@ -40,6 +41,7 @@ void RegisterAdditionalModules(TraceProcessorContext* context) {
   context->modules.emplace_back(new GraphicsEventModule(context));
   context->modules.emplace_back(new HeapGraphModule(context));
   context->modules.emplace_back(new SystemProbesModule(context));
+  context->modules.emplace_back(new DimprofdProbesModule(context));
   context->modules.emplace_back(new TranslationTableModule(context));
   context->modules.emplace_back(new StatsdModule(context));
   context->modules.emplace_back(new AndroidCameraEventModule(context));

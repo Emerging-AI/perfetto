@@ -220,13 +220,19 @@ void ArmGpuStatsDataSource::ReadGpuSampler() {
       } else {
         PERFETTO_LOG("print_sample_value %s %s",
                     cur_counter.str, get_sample_value(sample).c_str());
+        PERFETTO_LOG("print_sample_value %s %s",
+                    cur_counter.str, get_sample_value(sample).c_str());
         auto* arm_gpuinfo = arm_gpu_stats->add_arm_gpuinfo();
         arm_gpuinfo->set_key(static_cast<protos::pbzero::ArmGpuCounters>(cur_counter.id));
         switch (sample.type) {
-          case hwcpipe::counter_sample::type::uint64:
+          case hwcpipe::counter_sample::type::uint64: {
             arm_gpuinfo->set_int_value(sample.value.uint64);
-          case hwcpipe::counter_sample::type::float64:
+            break;
+          }
+          case hwcpipe::counter_sample::type::float64: {
             arm_gpuinfo->set_double_value(sample.value.float64);
+            break;
+          }
           default:
             arm_gpuinfo->set_int_value(0); // TODO: 
         }
