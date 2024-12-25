@@ -1,0 +1,72 @@
+# Copyright (C) 2018 The Android Open Source Project
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+#      http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
+import("../../gn/perfetto.gni")
+import("../../gn/perfetto_cc_proto_descriptor.gni")
+import("../../gn/proto_library.gni")
+import("../../gn/test.gni")
+
+# The command line client for dimensity_profiler. Allows to configure / start / stop
+# tracing, acting as a Consumer.
+executable("dimensity_profiler") {
+  deps = [
+    ":dimensity_profiler_cmd",
+    "../../gn:default_deps",
+  ]
+  sources = [ "main.cc" ]
+}
+
+# Contains all the implementation but not the main() entry point. This target
+# is shared both by the executable and tests.
+source_set("dimensity_profiler_cmd") {
+  public_deps = [
+    "../perfetto_cmd:protos_cpp",
+    "../../include/perfetto/ext/traced",
+    "../perfetto_cmd:bugreport_path",
+    "../perfetto_cmd:gen_cc_config_descriptor",
+    "../perfetto_cmd:pbtxt_to_pb",
+    "../perfetto_cmd:trigger_producer",
+  ]
+  deps = [
+    "../../gn:default_deps",
+    "../../protos/perfetto/common:cpp",
+    "../../protos/perfetto/config:cpp",
+    "../../protos/perfetto/config/ftrace:cpp",
+    "../../protos/perfetto/config/sys_stats:cpp",
+    "../../protos/perfetto/remote_writer:remote_writer_lite",
+    "../../protos/perfetto/remote_writer:remote_writer_grpc",
+    "../android_stats",
+    "../base",
+    "../base:version",
+    "../protozero",
+    "../tracing/ipc/consumer",
+    "../../gn:grpc",
+  ]
+  sources = [
+    "dimensity_profiler_cmd.cc",
+    "dimensity_profiler_cmd.h",
+    "remote_writer.cc",
+    "remote_writer.h",
+    "../perfetto_cmd/config.cc",
+    "../perfetto_cmd/config.h",
+    "../perfetto_cmd/packet_writer.cc",
+    "../perfetto_cmd/packet_writer.h",
+    "../perfetto_cmd/rate_limiter.cc",
+    "../perfetto_cmd/rate_limiter.h",
+  ]
+  if (is_android) {
+    deps += [ "../android_internal:lazy_library_loader" ]
+    sources += [ "dimensity_profiler_cmd_android.cc" ]
+  }
+}
