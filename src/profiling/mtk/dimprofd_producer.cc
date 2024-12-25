@@ -6,10 +6,11 @@
 #include "perfetto/tracing/core/data_source_config.h"
 #include "perfetto/tracing/core/data_source_descriptor.h"
 
-#include "src/profiling/mtk/arm_gpu_counter/arm_gpu_counter_data_source.h"
+#include "src/profiling/mtk/arm_gpu_stats/arm_gpu_stats_data_source.h"
 
 namespace perfetto {
 namespace profiling {
+  
 
 namespace {
 
@@ -47,12 +48,12 @@ DimprofdProducer::~DimprofdProducer() {
 
 template <>
 std::unique_ptr<DimprofdDataSource>
-DimprofdProducer::CreateDSInstance<ArmGpuCounterDataSource>(
+DimprofdProducer::CreateDSInstance<ArmGpuStatsDataSource>(
     TracingSessionID session_id,
     const DataSourceConfig& config) {
   auto buffer_id = static_cast<BufferID>(config.target_buffer());
-  return std::unique_ptr<DimprofdDataSource>(new ArmGpuCounterDataSource(
-      task_runner_, session_id, endpoint_->CreateTraceWriter(buffer_id)));
+  return std::unique_ptr<DimprofdDataSource>(new ArmGpuStatsDataSource(
+      task_runner_, session_id, endpoint_->CreateTraceWriter(buffer_id), config));
 }
 
 // Another anonymous namespace. This cannot be moved into the anonymous
@@ -76,7 +77,7 @@ constexpr DataSourceTraits Ds() {
 }
 
 constexpr const DataSourceTraits kAllDataSources[] = {
-    Ds<ArmGpuCounterDataSource>(),
+    Ds<ArmGpuStatsDataSource>(),
 };
 
 }  // namespace

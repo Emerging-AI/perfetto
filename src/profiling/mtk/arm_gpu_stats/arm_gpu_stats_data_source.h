@@ -2,11 +2,15 @@
 #define SRC_PROFILING_MTK_DIMPROFD_ARM_GPU_COUNTER_ARM_GPU_COUNTER_DATA_SOURCE_H_
 
 #include <memory>
+#include <map>
+#include <string>
 
-#include "perfetto/ext/tracing/core/basic_types.h"
 #include "perfetto/ext/base/weak_ptr.h"
+#include "perfetto/ext/tracing/core/basic_types.h"
 #include "perfetto/ext/tracing/core/trace_writer.h"
+#include "perfetto/tracing/core/data_source_config.h"
 #include "src/profiling/mtk/dimprofd_data_source.h"
+#include "src/profiling/mtk/arm_gpu_stats/arm_gpu_counters.h"
 
 #include <device/product_id.hpp>
 #include <hwcpipe/counter_database.hpp>
@@ -25,40 +29,47 @@ class TaskRunner;
 
 namespace profiling {
 
-class ArmGpuCounterDataSource : public DimprofdDataSource {
+class ArmGpuStatsDataSource : public DimprofdDataSource {
  public:
   static const DimprofdDataSource::Descriptor descriptor;
 
-  ArmGpuCounterDataSource(base::TaskRunner*,
+  ArmGpuStatsDataSource(base::TaskRunner*,
                           TracingSessionID,
-                          std::unique_ptr<TraceWriter> writer);
-  ~ArmGpuCounterDataSource() override;
+                          std::unique_ptr<TraceWriter> writer,
+                          const DataSourceConfig&);
+  ~ArmGpuStatsDataSource() override;
 
   // ProbesDataSource implementation.
   void Start() override;
   void Flush(FlushRequestID, std::function<void()> callback) override;
 
-  base::WeakPtr<ArmGpuCounterDataSource> GetWeakPtr() const;
+  base::WeakPtr<ArmGpuStatsDataSource> GetWeakPtr() const;
 
   // Virtual for testing.
   virtual std::string ReadFile(std::string path);
 
  private:
-  static void Tick(base::WeakPtr<ArmGpuCounterDataSource>);
+  struct CStrCmp {
+    bool operator()(const char* a, const char* b) const {
+      return strcmp(a, b) < 0;
+    }
+  };
 
-  void ReadGpuSampler();  // Virtual for testing.
+  static void Tick(base::WeakPtr<ArmGpuStatsDataSource>);
+
+  void ReadGpuSampler();   // Virtual for testing.
   void ReadGpuCounters();  // Virtual for testing.
-  // hwcpipe::sampler<> arm_sampler_;
   std::unique_ptr<hwcpipe::sampler<>> arm_sampler_ = nullptr;
   std::unique_ptr<hwcpipe::sampler_config> arm_sampler_config_ = nullptr;
-  uint32_t arm_counter_size_ = 0;
+  // uint32_t arm_counter_size_ = 0;
 
   base::TaskRunner* const task_runner_;
   std::unique_ptr<TraceWriter> writer_;
+  std::map<const char*, KeyAndCounter, CStrCmp> gpuinfo_counters_;
 
   uint32_t tick_period_ms_ = 0;
 
-  base::WeakPtrFactory<ArmGpuCounterDataSource> weak_factory_;  // Keep last.
+  base::WeakPtrFactory<ArmGpuStatsDataSource> weak_factory_;  // Keep last.
 };
 
 }  // namespace profiling

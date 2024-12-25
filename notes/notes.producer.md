@@ -73,6 +73,8 @@ unflatten -f -l 4 -c 6 out/traced_dbg_demo/heapprofd_standalone_client_example.d
 
 tools/ninja -C out/traced_dbg_demo demod && adb push ./out/traced_dbg_demo/demod /data/local/tmp && adb shell /data/local/tmp/demod
 
+tools/ninja -C out/traced_dbg_demo perfetto && adb push ./out/traced_dbg_demo/perfetto /data/local/tmp && adb shell /data/local/tmp/demod
+
 
 --------
 
@@ -91,8 +93,10 @@ write_into_file: true
 flush_timeout_ms: 30000
 flush_period_ms: 604800000
 
-'; echo ${CFG} | perfetto --txt -c - -o /data/misc/perfetto-traces/profile-000000 -d
+'; echo ${CFG} | /data/local/tmp/perfetto --txt -c - -o /data/misc/perfetto-traces/profile-000000 -d
 
+
+tools/ninja -C out/traced_dbg_demo perfetto && adb push ./out/traced_dbg_demo/perfetto /data/local/tmp
 
 CFG='buffers {
   size_kb: 63488
@@ -100,7 +104,13 @@ CFG='buffers {
 
 data_sources {
   config {
-    name: "linux.arm_gpu_counter"
+    name: "linux.arm_gpu_stats"
+    arm_gpu_stats_config {
+      gpuinfo_period_ms: 500
+      arm_gpu_counters: MALI_GPU_ACTIVE_CY
+      arm_gpu_counters: MALI_ANY_ACTIVE_CY
+      arm_gpu_counters: MALI_GEOM_SAMPLE_CULL_RATE
+    }
   }
 }
 
@@ -109,7 +119,7 @@ write_into_file: true
 flush_timeout_ms: 30000
 flush_period_ms: 604800000
 
-'; echo ${CFG} | perfetto --txt -c - -o /data/misc/perfetto-traces/profile-000000 -d
+'; echo ${CFG} | /data/local/tmp/perfetto --txt -c - -o /data/misc/perfetto-traces/profile-000001 -d
 
 
 
@@ -122,3 +132,35 @@ adb -s 0123456789ABCDEF shell /data/local/tmp/lib_gpu_counters_api_example
 adb push out/traced_dbg_demo/lib_gpu_counters_api_example /data/local/tmp
 
 adb shell /data/local/tmp/lib_gpu_counters_api_example
+
+
+
+CFG='buffers {
+  size_kb: 63488
+}
+
+data_sources: {
+ config: {
+  name: "linux.process_stats"
+  process_stats_config: {
+   scan_all_processes_on_start: true
+   proc_stats_poll_ms: 1000
+   scan_smaps_rollup: true
+   record_process_runtime: true
+  }
+ }
+}
+
+duration_ms: 0
+write_into_file: true
+flush_timeout_ms: 30000
+flush_period_ms: 604800000
+
+'; echo ${CFG} | perfetto --txt -c - -o /data/misc/perfetto-traces/profile-000000 -d
+
+
+
+
+--------
+
+
