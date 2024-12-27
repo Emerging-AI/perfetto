@@ -176,12 +176,13 @@ declare_args() {
       (perfetto_build_standalone && is_clang &&
        (is_linux || (is_android && android_api_level >= 29)))
 
-  # for mtk's dime profiler
+  # for mtk's dim profiler
   enable_perfetto_mtk_dimprofd = 
       perfetto_build_with_android ||
         (perfetto_build_standalone && is_clang &&
         (is_linux || (is_android && android_api_level >= 29)))
-
+  
+  enable_perfetto_dimprof_cmd = false
 
   # The Trace Processor: offline analytical engine to process traces and compute
   # metrics using a SQL engine.
