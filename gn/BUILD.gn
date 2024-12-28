@@ -412,6 +412,19 @@ if (enable_perfetto_heapprofd || enable_perfetto_traced_perf) {
   }
 }
 
+if (enable_perfetto_mtk_dimprofd) {
+  group("lib_gpu_counters") {
+    public_configs = [
+      "//buildtools:lib_gpu_counters_device_config",
+      "//buildtools:lib_gpu_counters_hwcpipe_config",
+    ]
+    public_deps = [
+      "//buildtools:lib_gpu_counters_device",
+      "//buildtools:lib_gpu_counters_hwcpipe",
+  ]
+  }
+}
+
 # Used by src/profiling/perf for perf_regs.h.
 if (enable_perfetto_traced_perf) {
   group("bionic_kernel_uapi_headers") {

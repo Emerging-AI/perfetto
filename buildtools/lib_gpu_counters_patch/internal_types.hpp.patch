@@ -1,0 +1,23 @@
+# fixit: error: field 'tag' will be initialized after field 'u' [-Werror,-Wreorder-ctor]
+# https://github.com/ARM-software/libGPUCounters
+# 3552bd7383404f0d2be300720fb4368ffac8f93d
+--- a/hwcpipe/include/hwcpipe/detail/internal_types.hpp
++++ b/hwcpipe/include/hwcpipe/detail/internal_types.hpp
+@@ -96,6 +96,7 @@ struct block_offset {
+  */
+ struct counter_definition {
+     enum class type { invalid, hardware, expression };
++    type tag;
+     union u {
+         block_offset address{};
+         expression::expression_definition expression;
+@@ -104,8 +105,7 @@ struct counter_definition {
+         explicit u(block_offset address)
+             : address(address) {}
+     } u;
+-    type tag;
+-
++    
+     counter_definition()
+         : tag(type::invalid)
+         , u(block_offset{0, 0, device::hwcnt::block_type::fe}) {}

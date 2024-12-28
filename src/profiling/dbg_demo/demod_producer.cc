@@ -221,7 +221,7 @@ void DemodProducer::ConnectWithRetries(const char* socket_name) {
 void DemodProducer::ConnectService() {
   PERFETTO_LOG("DemodProducer::ConnectService");
   SetProducerEndpoint(ProducerIPCClient::Connect(
-      producer_sock_name_, this, kDemodDataSource, task_runner_));
+      producer_sock_name_, this, "perfetto.demod", task_runner_));
 }
 
 void DemodProducer::SetProducerEndpoint(

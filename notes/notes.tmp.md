@@ -41,8 +41,12 @@ bazel query --noimplicit_deps \
 edu.cs4730.opengl30cube
 
 
-mkdir out/cpuf1
-./tools/cpu_profile -n "xyz.jockyhawk.trianglegl" -d 10000 -o out/cpuf10
+mkdir out/cpuf12
+./tools/cpu_profile -n "xyz.jockyhawk.trianglegl" -d 10000 -o out/cpuf12 --print-config
+
+./out/mac_debug/traceconv profile --pid 6734 out/cpuf2/profile.1.pid.15637.pb out/cpuf2/profile.1.pid.15637.json
+
+6734
 
 ### 对应的cfg
 ```
@@ -95,7 +99,7 @@ data_sources {
 
 ### atrace
 ./tools/record_android_trace -c test/configs/atrace_power.cfg -o atrace_power2.ptf 
-./tools/record_android_trace -c test/configs/cpu_profile.cfg -o cpu_profile.ptf 
+./tools/record_android_trace -c test/configs/cpu_profile.cfg -o ./out/cpu12/cpu_profile.pb 
 
 ### ftrace
 

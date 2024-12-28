@@ -17,6 +17,8 @@ import("../../gn/perfetto_cc_proto_descriptor.gni")
 import("../../gn/proto_library.gni")
 import("../../gn/test.gni")
 
+assert(enable_perfetto_dimprof_cmd)
+
 # The command line client for dimensity_profiler. Allows to configure / start / stop
 # tracing, acting as a Consumer.
 executable("dimensity_profiler") {
@@ -26,6 +28,7 @@ executable("dimensity_profiler") {
   ]
   sources = [ "main.cc" ]
 }
+
 
 # Contains all the implementation but not the main() entry point. This target
 # is shared both by the executable and tests.

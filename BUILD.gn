@@ -35,13 +35,15 @@ if (enable_perfetto_platform_services) {
     "src/perfetto_cmd:perfetto",
     "src/perfetto_cmd:trigger_perfetto",
     "src/traced/service:traced",
-    "src/dimensity_profiler_cmd:dimensity_profiler"
   ]
   if (enable_perfetto_traced_probes) {
     all_targets += [ "src/traced/probes:traced_probes" ]
   }
   if (enable_perfetto_traced_relay) {
     all_targets += [ "src/traced_relay:traced_relay" ]
+  }
+  if (enable_perfetto_dimprof_cmd) {
+    all_targets += [ "src/dimensity_profiler_cmd:dimensity_profiler" ]
   }
 }
 
@@ -92,6 +94,10 @@ if (enable_perfetto_traced_perf) {
 if (enable_perfetto_traced_dbg_demo) {
   all_targets += [ "src/profiling/dbg_demo:demod" ]
 }
+
+if (enable_perfetto_mtk_dimprofd) {
+  all_targets += [ "src/profiling/mtk:dimprofd" ]
+} 
 
 if (perfetto_build_with_android) {
   all_targets += [ "src/android_internal:libperfetto_android_internal" ]
