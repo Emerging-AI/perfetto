@@ -2014,6 +2014,10 @@ perfetto_filegroup(
         "src/trace_processor/importers/proto/v8_tracker.h",
         "src/trace_processor/importers/proto/vulkan_memory_tracker.cc",
         "src/trace_processor/importers/proto/vulkan_memory_tracker.h",
+        "src/trace_processor/importers/proto/dimprofd_probes_module.h",
+        "src/trace_processor/importers/proto/dimprofd_probes_module.cc",
+        "src/trace_processor/importers/proto/dimprofd_probes_parser.h",
+        "src/trace_processor/importers/proto/dimprofd_probes_parser.cc",
     ],
 )
 
@@ -4375,6 +4379,7 @@ perfetto_proto_library(
         "protos/perfetto/common/tracing_service_capabilities.proto",
         "protos/perfetto/common/tracing_service_state.proto",
         "protos/perfetto/common/track_event_descriptor.proto",
+        "protos/perfetto/common/arm_gpu_counters.proto",
     ],
     visibility = [
         PERFETTO_CONFIG.proto_library_visibility,
@@ -4423,6 +4428,7 @@ perfetto_proto_library(
         ":protos_perfetto_common_protos",
     ],
 )
+
 
 # GN target: //protos/perfetto/config/android:zero
 perfetto_cc_protozero_library(
@@ -4649,6 +4655,7 @@ perfetto_proto_library(
         "protos/perfetto/config/profiling/heapprofd_config.proto",
         "protos/perfetto/config/profiling/java_hprof_config.proto",
         "protos/perfetto/config/profiling/perf_event_config.proto",
+        "protos/perfetto/config/profiling/arm_gpu_stats_config.proto",
     ],
     visibility = [
         PERFETTO_CONFIG.proto_library_visibility,
@@ -5792,6 +5799,7 @@ perfetto_proto_library(
         "protos/perfetto/trace/profiling/profile_common.proto",
         "protos/perfetto/trace/profiling/profile_packet.proto",
         "protos/perfetto/trace/profiling/smaps.proto",
+        "protos/perfetto/trace/profiling/arm_gpu_stats.proto",
     ],
     visibility = [
         PERFETTO_CONFIG.proto_library_visibility,
