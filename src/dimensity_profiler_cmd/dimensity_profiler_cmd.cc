@@ -1225,11 +1225,11 @@ void DimensityProfilerCmd::OnTraceData(std::vector<TracePacket> packets, bool ha
 
   // TODO: add remote_writer flags
   // TODO: add port detect
-  // PERFETTO_CHECK(remote_writer_.has_value());
-  // if (!remote_writer_->WritePackets(packets)) {
-  //   PERFETTO_ELOG("Failed to remote write packets");
-  //   FinalizeTraceAndExit();
-  // }
+  PERFETTO_CHECK(remote_writer_.has_value());
+  if (!remote_writer_->WritePackets(packets)) {
+    PERFETTO_ELOG("Failed to remote write packets");
+    FinalizeTraceAndExit();
+  }
   PERFETTO_LOG("hit OnTraceData");
 
   if (!has_more) {
