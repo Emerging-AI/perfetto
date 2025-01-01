@@ -86,6 +86,7 @@ namespace perfetto::trace_processor::stats {
   F(invalid_clock_snapshots,              kSingle,  kError,    kAnalysis, ""), \
   F(invalid_cpu_times,                    kSingle,  kError,    kAnalysis, ""), \
   F(meminfo_unknown_keys,                 kSingle,  kError,    kAnalysis, ""), \
+  F(arm_gpuinfo_unknown_keys,             kSingle,  kError,    kAnalysis, ""), \
   F(mismatched_sched_switch_tids,         kSingle,  kError,    kAnalysis, ""), \
   F(mm_unknown_type,                      kSingle,  kError,    kAnalysis, ""), \
   F(parse_trace_duration_ns,              kSingle,  kInfo,     kAnalysis, ""), \

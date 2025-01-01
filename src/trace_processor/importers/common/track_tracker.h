@@ -175,6 +175,9 @@ class TrackTracker {
     kSoftIrqTime,
     kCpuIdleTime,
 
+    // arm gpu counter
+    kArmGpuCounter,
+
     // Not set. Legacy, never use for new tracks.
     // If set the classification can't be used to decide the tracks and
     // dimensions + name should be used instead. Strongly discouraged.
@@ -195,6 +198,7 @@ class TrackTracker {
     kThermals,
     kClockFrequency,
     kBatteryMitigation,
+    kGpu,
 
     // Keep this last.
     kSizeSentinel,
@@ -478,6 +482,8 @@ class TrackTracker {
         return "cpu_user_time";
       case TrackClassification::kNiceUserTime:
         return "cpu_nice_user_time";
+      case TrackClassification::kArmGpuCounter:
+        return "arm_gpu_counter";
 
       case TrackClassification::kUnknown:
         return "N/A";

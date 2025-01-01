@@ -1697,6 +1697,24 @@ if (enable_perfetto_mtk_dimprofd) {
      ]
   }
 
+  config("lib_gpu_counters_hwcpipe_counters_config") {
+    visibility = _buildtools_visibility
+    include_dirs = [
+      "lib_gpu_counters/hwcpipe/include", 
+    ]
+  }
+
+  source_set("lib_gpu_counters_hwcpipe_counters") {
+    visibility = _buildtools_visibility
+    sources = [
+      "lib_gpu_counters/hwcpipe/include/hwcpipe/hwcpipe_counter.h",
+    ]
+    configs -= [ "//gn/standalone:extra_warnings" ]
+    public_configs = [
+      ":lib_gpu_counters_hwcpipe_counters_config",
+    ]
+  }
+
   # config("lib_gpu_counters_api_example_config") {
   #   visibility = _buildtools_visibility
   #   cflags = [

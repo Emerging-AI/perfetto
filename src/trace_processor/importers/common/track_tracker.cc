@@ -56,6 +56,8 @@ const char* GetNameForGroup(TrackTracker::Group group) {
       return "Clock Freqeuncy";
     case TrackTracker::Group::kBatteryMitigation:
       return "Battery Mitigation";
+    case TrackTracker::Group::kGpu:
+      return "GPU";
     case TrackTracker::Group::kSizeSentinel:
       PERFETTO_FATAL("Unexpected size passed as group");
   }

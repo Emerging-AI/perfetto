@@ -1,6 +1,7 @@
 
 
 tools/gn args out/traced_dbg_demo --export-compile-commands
+tools/gn gen out/mac_debug --export-compile-commands
 tools/gn gen out/traced_dbg_demo --export-compile-commands
 
 tools/gn ls out/traced_dbg_demo
@@ -8,6 +9,7 @@ tools/gn ls out/traced_dbg_demo
 tools/gn ls out/traced_dbg_demo > out/traced_dbg_demo/all_targets.txt
 
 tools/ninja -C out/traced_dbg_demo -t targets > out/traced_dbg_demo/all_ninja_targets.txt
+tools/ninja -C out/mac_debug -t targets > out/mac_debug/all_ninja_targets.txt
 
 
 tools/ninja -C out/traced_dbg_demo -t graph  >  out/traced_dbg_demo/build.dot
@@ -152,15 +154,26 @@ data_sources: {
 }
 
 duration_ms: 0
-write_into_file: true
 flush_timeout_ms: 30000
 flush_period_ms: 604800000
 
-'; echo ${CFG} | perfetto --txt -c - -o /data/misc/perfetto-traces/profile-000000 -d
+'; echo ${CFG} | /data/local/tmp/perfetto --txt -c - -o /data/local/tmp/profile-00018 -d
 
+/data/local/tmp/perfetto --txt -c - -o /data/local/tmp/profile-00016 -d
 
-
+perfetto --txt -c - -o /data/misc/perfetto-traces/profile-00017 -d
+/data/misc/perfetto-traces
 
 --------
 
+tools/ninja -C out/traced_dbg_demo perfetto && adb -s 17b96d97 push out/traced_dbg_demo/perfetto /data/local/tmp
 
+adb push out/traced_dbg_demo/traced_probes /data/local/tmp/traced_probes_new
+
+
+adb -s 0123456789ABCDEF pull /data/local/tmp/profile-00014 out
+adb  pull /data/misc/perfetto-traces/profile-00017 out
+
+adb -s 17b96d97 shell
+
+adb -s 17b96d97 pull /data/local/tmp/profile-00015 out

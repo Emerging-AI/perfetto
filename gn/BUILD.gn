@@ -421,7 +421,15 @@ if (enable_perfetto_mtk_dimprofd) {
     public_deps = [
       "//buildtools:lib_gpu_counters_device",
       "//buildtools:lib_gpu_counters_hwcpipe",
-  ]
+    ]
+  }
+  group("lib_gpu_counters_hwcpipe_counters") {
+    public_configs = [
+      "//buildtools:lib_gpu_counters_hwcpipe_counters_config",
+    ]
+    public_deps = [
+      "//buildtools:lib_gpu_counters_hwcpipe_counters",
+    ]
   }
 }
 
