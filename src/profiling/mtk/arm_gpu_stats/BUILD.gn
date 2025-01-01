@@ -15,11 +15,24 @@ source_set("arm_gpu_stats") {
     "../../../../protos/perfetto/trace:zero",
     # "../../../../protos/perfetto/trace/profiling/arm_gpu_stats:zero",
     "../../../base",
+    ":arm_gpu_counters",
   ]
   sources = [
     "arm_gpu_stats_data_source.cc",
     "arm_gpu_stats_data_source.h",
+  ]
+}
+
+source_set("arm_gpu_counters") {
+  sources = [
     "arm_gpu_counters.h",
+  ]
+  public_deps = [
+    "../../../../gn:lib_gpu_counters_hwcpipe_counters",
+    "../../../tracing/core",
+  ]
+  deps = [
+    "../../../../gn:lib_gpu_counters_hwcpipe_counters",
   ]
 }
 # perfetto_unittest_source_set("unittests") {

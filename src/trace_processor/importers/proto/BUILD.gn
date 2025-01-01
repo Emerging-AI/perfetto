@@ -162,10 +162,6 @@ source_set("full") {
     "v8_tracker.h",
     "vulkan_memory_tracker.cc",
     "vulkan_memory_tracker.h",
-    "dimprofd_probes_module.cc",
-    "dimprofd_probes_module.h",
-    "dimprofd_probes_parser.cc",
-    "dimprofd_probes_parser.h",
   ]
   deps = [
     ":gen_cc_config_descriptor",
@@ -206,6 +202,33 @@ source_set("full") {
     "../syscalls:full",
     "winscope:full",
   ]
+  if (enable_perfetto_mtk_dimprofd) {
+    deps += [ ":mtk_ext", ]
+  }
+}
+
+if (enable_perfetto_mtk_dimprofd) {
+  source_set("mtk_ext") {
+    sources = [
+      "dimprofd_probes_module.cc",
+      "dimprofd_probes_module.h",
+      "dimprofd_probes_parser.cc",
+      "dimprofd_probes_parser.h",
+    ]
+    public_deps = [
+      # "../../../../gn:lib_gpu_counters_hwcpipe_counters",
+    ]
+    deps = [
+      "../../../../gn:default_deps",
+      # "../../../../gn:lib_gpu_counters",
+      "../../../../src/profiling/mtk/arm_gpu_stats:arm_gpu_counters",
+      "../../../../protos/perfetto/common:zero",
+      "../../../../protos/perfetto/config:zero",
+      "../common",
+      "../common:parser_types",
+    ]
+      
+  }
 }
 
 source_set("proto_importer_module") {

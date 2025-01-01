@@ -1,2 +1,2 @@
 hwcpipe/include/hwcpipe/detail/internal_types.hpp,internal_types.hpp.patch
-#buildtools/lib_gpu_counters/hwcpipe/include/hwcpipe/sampler.hpp,sampler.hpp.patch
+hwcpipe/include/hwcpipe/sampler.hpp,sampler.hpp.patch

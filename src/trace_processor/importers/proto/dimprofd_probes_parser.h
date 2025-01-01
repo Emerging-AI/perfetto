@@ -25,6 +25,8 @@ class DimprofdProbesParser {
   TraceProcessorContext* const context_;
 
  private:
+
+ std::vector<StringId> arm_gpuinfo_strs_id_;
 };
 
 }  // namespace trace_processor

@@ -7,6 +7,7 @@
 
 #include <hwcpipe/hwcpipe_counter.h>
 #include <vector>
+#include <optional>
 
 namespace perfetto {
 
@@ -15,13 +16,13 @@ namespace profiling {
 struct KeyAndCounter {
   const char* str;
   int id;
-  hwcpipe_counter type;
+  // hwcpipe_counter type;
+  std::optional<hwcpipe_counter> type;
 };
 
 constexpr KeyAndCounter kArmGpuInfoPBKeys[] = {
-    // {"MaliGPUUnspecified",
-    // protos::pbzero::ArmGpuCounters::MALI_GPU_UNSPECIFIED,
-    //  -1},
+    {"MaliGPUUnspecified", protos::pbzero::ArmGpuCounters::MALI_GPU_UNSPECIFIED,
+     std::nullopt},
     {"MaliGPUActiveCy", protos::pbzero::ArmGpuCounters::MALI_GPU_ACTIVE_CY,
      MaliGPUActiveCy},
     {"MaliGPUIRQActiveCy",
@@ -1070,6 +1071,18 @@ constexpr KeyAndCounter kArmGpuInfoPBKeys[] = {
      MaliEngZSBackpressureRate},
 
 };
+
+// Returns a lookup table of arm gpu counter names addressable by counter id.
+inline std::vector<const char*> BuildArmGpuinfoCounterNames() {
+  int max_id = 0;
+  for (size_t i = 0; i < base::ArraySize(kArmGpuInfoPBKeys); i++)
+    max_id = std::max(max_id, kArmGpuInfoPBKeys[i].id);
+  std::vector<const char*> v;
+  v.resize(static_cast<size_t>(max_id) + 1);
+  for (size_t i = 0; i < base::ArraySize(kArmGpuInfoPBKeys); i++)
+    v[static_cast<size_t>(kArmGpuInfoPBKeys[i].id)] = kArmGpuInfoPBKeys[i].str;
+  return v;
+}
 
 }  // namespace profiling
 }  // namespace perfetto

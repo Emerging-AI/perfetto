@@ -3,7 +3,7 @@ syntax = "proto2";
 
 package perfetto.protos;
 
-// next id: 417
+// next id: 418
 enum ArmGpuCounters {
     MALI_GPU_UNSPECIFIED = 0;
     MALI_GPU_ACTIVE_CY = 1;
