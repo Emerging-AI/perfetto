@@ -121,7 +121,7 @@ ArmGpuStatsDataSource::ArmGpuStatsDataSource(
     if (gpuinfo_counters_enabled[static_cast<size_t>(k.id)] == false) {
       continue;
     }
-    ec = arm_sampler_config_->add_counter(k.type); // FIXME: 如果失败，是否污染sampler的counter_
+    ec = arm_sampler_config_->add_counter(k.type.value()); // FIXME: 如果失败，是否污染sampler的counter_
     if (ec) {
       PERFETTO_ELOG("%s counter not supported by this GPU.", k.str);
       continue;
@@ -213,7 +213,7 @@ void ArmGpuStatsDataSource::ReadGpuSampler() {
         // std::cout << pair.first << ": " << pair.second << std::endl;
       auto cur_counter = pair.second;
 
-      ec = arm_sampler_->get_counter_value(cur_counter.type, sample);
+      ec = arm_sampler_->get_counter_value(cur_counter.type.value(), sample);
       if (ec) {
         PERFETTO_ELOG("sample %s failed by %s",
                       cur_counter.str, ec.message().c_str());
