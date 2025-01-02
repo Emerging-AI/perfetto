@@ -1302,6 +1302,18 @@ perfetto_filegroup(
     ],
 )
 
+# GN target: //src/profiling:deobfuscator
+perfetto_filegroup(
+    name = "src_profiling_mtk",
+    srcs = [
+        # "src/profiling/mtk/arm_gpu_stats/arm_gpu_stats_data_source.cc",
+        # "src/profiling/mtk/arm_gpu_stats/arm_gpu_stats_data_source.h",
+        "src/profiling/mtk/arm_gpu_stats/arm_gpu_counters.h",
+        "src/profiling/mtk/dimprofd_data_source.h",
+        "src/profiling/mtk/dimprofd_data_source.cc",
+    ],
+)
+
 # GN target: //src/protozero/filtering:bytecode_common
 perfetto_filegroup(
     name = "src_protozero_filtering_bytecode_common",
@@ -6504,6 +6516,7 @@ perfetto_cc_library(
         ":src_trace_processor_util_trace_type",
         ":src_trace_processor_util_util",
         ":src_trace_processor_util_zip_reader",
+        ":src_profiling_mtk",
     ],
     hdrs = [
         ":include_perfetto_base_base",
@@ -6522,6 +6535,10 @@ perfetto_cc_library(
         ":include_perfetto_trace_processor_basic_types",
         ":include_perfetto_trace_processor_storage",
         ":include_perfetto_trace_processor_trace_processor",
+        ":include_perfetto_ext_tracing_core_core",
+        ":include_perfetto_tracing_tracing",
+        ":include_perfetto_tracing_core_core",
+        ":include_perfetto_tracing_core_forward_decls",
     ],
     visibility = [
         "//visibility:public",
@@ -6566,6 +6583,7 @@ perfetto_cc_library(
                ":protos_perfetto_trace_translation_zero",
                ":protos_third_party_pprof_zero",
                ":protos_third_party_simpleperf_zero",
+               ":protos_perfetto_config_cpp",
                ":protozero",
                ":src_base_base",
                ":src_trace_processor_containers_containers",
@@ -6586,7 +6604,8 @@ perfetto_cc_library(
            PERFETTO_CONFIG.deps.sqlite +
            PERFETTO_CONFIG.deps.sqlite_ext_percentile +
            PERFETTO_CONFIG.deps.zlib +
-           PERFETTO_CONFIG.deps.demangle_wrapper,
+           PERFETTO_CONFIG.deps.demangle_wrapper +
+           PERFETTO_CONFIG.deps.lib_gpu_counters,
     linkstatic = True,
 )
 
