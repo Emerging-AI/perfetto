@@ -100,6 +100,14 @@ def perfetto_deps():
         url = "https://github.com/bazelbuild/bazel-skylib/archive/2169ae1c374aab4a09aa90e65efe1a3aad4e279b.tar.gz",
     )
 
+    _add_repo_if_not_existing(
+        http_archive,
+        name = "lib_gpu_counters",
+        sha256 = "6b7e8aa3451f9ad71ed2ca775d06da188d33f29e938f3ffeca46cf541ae0a6bf",         
+        url = 'https://github.com/ARM-software/libGPUCounters/archive/3552bd7383404f0d2be300720fb4368ffac8f93d.tar.gz',
+        build_file = "@perfetto//bazel:lib_gpu_counters.BUILD",
+    )
+
 def _add_repo_if_not_existing(repo_rule, name, **kwargs):
     if name not in native.existing_rules():
         repo_rule(name = name, **kwargs)
