@@ -180,10 +180,15 @@ class DimensityProfilerCmd : public Consumer {
   bool ignore_guardrails_ = false;
   bool upload_flag_ = false;
   bool connected_ = false;
+  int port_ = 0;
   std::string uuid_;
   std::optional<TracingSessionID> clone_tsid_{};
   bool clone_for_bugreport_ = false;
   std::function<void()> on_session_cloned_;
+
+  // params for remote_writer
+  bool enable_remote_writer_ = false;
+  uint32_t remote_writer_push_ms_ = 0;
 
   // How long we expect to trace for or 0 if the trace is indefinite.
   uint32_t expected_duration_ms_ = 0;
