@@ -233,6 +233,11 @@ Usage: %s
                              extend past 80 chars.
   --query-raw              : Like --query, but prints raw proto-encoded bytes
                              of tracing_service_state.proto.
+  --enable-remote-writer
+  --remote-writer-push-ms  : The interval between each push[ms]. Needed if use
+                             enable-remote-writer flag.
+  --port           -p      : The port of remote writer. Needed if use enable-
+                             remote-writer flag.
   --help           -h
 
 Light configuration flags: (only when NOT using -c/--config)
@@ -295,6 +300,8 @@ std::optional<int> DimensityProfilerCmd::ParseCmdlineAndMaybeDaemonize(int argc,
     OPT_QUERY,
     OPT_LONG,
     OPT_QUERY_RAW,
+    OPT_ENABLE_REMOTE_WRITER,
+    OPT_WRITER_PUSH_RATE,
     OPT_VERSION,
   };
   static const option long_options[] = {
@@ -307,6 +314,7 @@ std::optional<int> DimensityProfilerCmd::ParseCmdlineAndMaybeDaemonize(int argc,
       {"buffer", required_argument, nullptr, 'b'},
       {"size", required_argument, nullptr, 's'},
       {"app", required_argument, nullptr, 'a'},
+      {"port", required_argument, nullptr, 'p'},
       {"no-guardrails", no_argument, nullptr, OPT_IGNORE_GUARDRAILS},
       {"txt", no_argument, nullptr, OPT_PBTXT_CONFIG},
       {"upload", no_argument, nullptr, OPT_UPLOAD},
@@ -325,6 +333,8 @@ std::optional<int> DimensityProfilerCmd::ParseCmdlineAndMaybeDaemonize(int argc,
       {"query", no_argument, nullptr, OPT_QUERY},
       {"long", no_argument, nullptr, OPT_LONG},
       {"query-raw", no_argument, nullptr, OPT_QUERY_RAW},
+      {"enable-remote-writer", no_argument, nullptr, OPT_ENABLE_REMOTE_WRITER},
+      {"remote-writer-push-ms", required_argument, nullptr, OPT_WRITER_PUSH_RATE},
       {"version", no_argument, nullptr, OPT_VERSION},
       {"save-for-bugreport", no_argument, nullptr, OPT_BUGREPORT},
       {"save-all-for-bugreport", no_argument, nullptr, OPT_BUGREPORT_ALL},
@@ -352,7 +362,7 @@ std::optional<int> DimensityProfilerCmd::ParseCmdlineAndMaybeDaemonize(int argc,
   optind = 1;  // Reset getopt state. It's reused by the snapshot thread.
   for (;;) {
     int option =
-        getopt_long(argc, argv, "hc:o:dDt:b:s:a:", long_options, nullptr);
+        getopt_long(argc, argv, "hc:o:dDt:b:s:a:p:", long_options, nullptr);
 
     if (option == -1)
       break;  // EOF.
@@ -451,6 +461,12 @@ std::optional<int> DimensityProfilerCmd::ParseCmdlineAndMaybeDaemonize(int argc,
       continue;
     }
 
+    if (option == 'p') {
+      port_ = atoi(optarg);
+      // enable_remote_writer_ = true;
+      continue;
+    }
+
     if (option == OPT_UPLOAD) {
 #if PERFETTO_BUILDFLAG(PERFETTO_OS_ANDROID)
       upload_flag_ = true;
@@ -546,6 +562,18 @@ std::optional<int> DimensityProfilerCmd::ParseCmdlineAndMaybeDaemonize(int argc,
     if (option == OPT_QUERY_RAW) {
       query_service_ = true;
       query_service_output_raw_ = true;
+      continue;
+    }
+
+    if(option == OPT_ENABLE_REMOTE_WRITER) {
+      enable_remote_writer_ = true;
+      continue;
+    }
+
+    if(option == OPT_WRITER_PUSH_RATE) {
+      // TODO(xinran): PERFETTO_CHECK needed?
+      remote_writer_push_ms_ = atoll(optarg);
+      // enable_remote_writer_ = true;
       continue;
     }
 
@@ -857,7 +885,11 @@ std::optional<int> DimensityProfilerCmd::ParseCmdlineAndMaybeDaemonize(int argc,
       packet_writer_.emplace(trace_out_stream_.get());
   }
 
-  remote_writer_.emplace("localhost", 3456);
+  if (enable_remote_writer_) {
+    PERFETTO_CHECK(port_ > 0);
+    PERFETTO_CHECK(remote_writer_push_ms_ > 0);
+    remote_writer_.emplace("localhost", port_);
+  }
 
   bool will_trace_indefinitely =
       trace_config_->duration_ms() == 0 &&
@@ -1061,7 +1093,7 @@ int DimensityProfilerCmd::ConnectToServiceAndRun() {
       auto start_time = std::chrono::steady_clock::now();  
       while (!tracing_finshed_) {
           task_runner_.PostTask(sync_task);
-          std::this_thread::sleep_for(std::chrono::milliseconds(100)); // 休眠 100 毫秒
+          std::this_thread::sleep_for(std::chrono::milliseconds(remote_writer_push_ms_)); // 休眠 100 毫秒
 
           auto current_time = std::chrono::steady_clock::now();
           auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - start_time).count();
@@ -1223,14 +1255,16 @@ void DimensityProfilerCmd::OnTraceData(std::vector<TracePacket> packets, bool ha
     FinalizeTraceAndExit();
   }
 
-  // TODO: add remote_writer flags
+  // xinran: add remote_writer flags
   // TODO: add port detect
-  PERFETTO_CHECK(remote_writer_.has_value());
-  if (!remote_writer_->WritePackets(packets)) {
-    PERFETTO_ELOG("Failed to remote write packets");
-    FinalizeTraceAndExit();
+  if (enable_remote_writer_) {
+    PERFETTO_CHECK(remote_writer_.has_value());
+    if (!remote_writer_->WritePackets(packets)) {
+      PERFETTO_ELOG("Failed to remote write packets");
+      FinalizeTraceAndExit();
+    }
+    PERFETTO_LOG("hit OnTraceData");
   }
-  PERFETTO_LOG("hit OnTraceData");
 
   if (!has_more) {
     
