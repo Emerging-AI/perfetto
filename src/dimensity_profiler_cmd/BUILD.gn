@@ -18,6 +18,7 @@ import("../../gn/proto_library.gni")
 import("../../gn/test.gni")
 
 assert(enable_perfetto_dimprof_cmd)
+assert(enable_perfetto_grpc)
 
 # The command line client for dimensity_profiler. Allows to configure / start / stop
 # tracing, acting as a Consumer.

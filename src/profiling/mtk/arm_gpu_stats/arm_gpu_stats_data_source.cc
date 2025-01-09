@@ -90,8 +90,7 @@ ArmGpuStatsDataSource::ArmGpuStatsDataSource(
   ArmGpuStatsConfig::Decoder cfg(ds_config.arm_gpu_stats_config_raw());
 
   uint32_t period_ms = ClampTo10Ms(cfg.gpuinfo_period_ms(), "gpu_period_ms");
-  tick_period_ms_ = period_ms;  // TODO: get by config
-
+  tick_period_ms_ = period_ms;
 
   // setup hwcpipe
   auto gpu = hwcpipe::gpu(0);
@@ -103,8 +102,7 @@ ArmGpuStatsDataSource::ArmGpuStatsDataSource(
   arm_sampler_config_ = std::make_unique<hwcpipe::sampler_config>(gpu);
   std::error_code ec;
 
-  constexpr size_t kMaxArmGpuInfoEnum =
-      protos::pbzero::ArmGpuCounters_MAX;
+  constexpr size_t kMaxArmGpuInfoEnum = protos::pbzero::ArmGpuCounters_MAX;
   std::bitset<kMaxArmGpuInfoEnum + 1> gpuinfo_counters_enabled{};
   if (!cfg.has_arm_gpu_counters())
     gpuinfo_counters_enabled.set();
@@ -121,7 +119,11 @@ ArmGpuStatsDataSource::ArmGpuStatsDataSource(
     if (gpuinfo_counters_enabled[static_cast<size_t>(k.id)] == false) {
       continue;
     }
-    ec = arm_sampler_config_->add_counter(k.type.value()); // FIXME: 如果失败，是否污染sampler的counter_
+    if (!k.type.has_value()) {
+      continue;
+    }
+    ec = arm_sampler_config_->add_counter(
+        k.type.value());  // FIXME: 如果失败，是否污染sampler的counter_
     if (ec) {
       PERFETTO_ELOG("%s counter not supported by this GPU.", k.str);
       continue;
@@ -132,32 +134,6 @@ ArmGpuStatsDataSource::ArmGpuStatsDataSource(
     PERFETTO_ELOG("counter is empty");
     return;
   }
-  
-
-  // hwcpipe_counter counter;
-  // for (const auto& [key, pb_id] : gpuinfo_counters_) {
-  //   try {
-  //     counter = find_counter_map("MaliGPUActiveCy");
-  //   } catch (const std::runtime_error& e) {
-  //     continue;
-  //   }
-
-  //   ec = arm_sampler_config_->add_counter(counter);
-  //   if (ec) {
-  //     PERFETTO_ELOG("GPU Active Cycles counter not supported by this GPU.");
-  //     return;
-  //   } else {
-  //     arm_counter_size_ += 1;
-  //   }
-  // }
-
-  // ec = arm_sampler_config_->add_counter(MaliGPUActiveCy);
-  // if (ec) {
-  //   PERFETTO_ELOG("GPU Active Cycles counter not supported by this GPU.");
-  //   return;
-  // } else {
-  //   arm_counter_size_ += 1;
-  // }
 
   arm_sampler_ =
       std::make_unique<hwcpipe::sampler<>>(arm_sampler_config_.get());
@@ -165,6 +141,10 @@ ArmGpuStatsDataSource::ArmGpuStatsDataSource(
 
 void ArmGpuStatsDataSource::Start() {
   auto weak_this = GetWeakPtr();
+  if (gpuinfo_counters_.empty()) {
+    PERFETTO_ELOG("GPU Sampler no Counters");
+    return;
+  }
   std::error_code ec = arm_sampler_->start_sampling();
   if (ec) {
     PERFETTO_ELOG("GPU Sampler start_sampling failed by %s.",
@@ -210,20 +190,21 @@ void ArmGpuStatsDataSource::ReadGpuSampler() {
     }
 
     for (const auto& pair : gpuinfo_counters_) {
-        // std::cout << pair.first << ": " << pair.second << std::endl;
+      // std::cout << pair.first << ": " << pair.second << std::endl;
       auto cur_counter = pair.second;
 
       ec = arm_sampler_->get_counter_value(cur_counter.type.value(), sample);
       if (ec) {
-        PERFETTO_ELOG("sample %s failed by %s",
-                      cur_counter.str, ec.message().c_str());
+        PERFETTO_ELOG("sample %s failed by %s", cur_counter.str,
+                      ec.message().c_str());
       } else {
-        PERFETTO_LOG("print_sample_value %s %s",
-                    cur_counter.str, get_sample_value(sample).c_str());
-        PERFETTO_LOG("print_sample_value %s %s",
-                    cur_counter.str, get_sample_value(sample).c_str());
+        PERFETTO_LOG("print_sample_value %s %s", cur_counter.str,
+                     get_sample_value(sample).c_str());
+        PERFETTO_LOG("print_sample_value %s %s", cur_counter.str,
+                     get_sample_value(sample).c_str());
         auto* arm_gpuinfo = arm_gpu_stats->add_arm_gpuinfo();
-        arm_gpuinfo->set_key(static_cast<protos::pbzero::ArmGpuCounters>(cur_counter.id));
+        arm_gpuinfo->set_key(
+            static_cast<protos::pbzero::ArmGpuCounters>(cur_counter.id));
         switch (sample.type) {
           case hwcpipe::counter_sample::type::uint64: {
             arm_gpuinfo->set_int_value(sample.value.uint64);
@@ -234,10 +215,9 @@ void ArmGpuStatsDataSource::ReadGpuSampler() {
             break;
           }
           default:
-            arm_gpuinfo->set_int_value(0); // TODO: 
+            arm_gpuinfo->set_int_value(0);  // TODO:
         }
       }
-
     }
 
     // ec = arm_sampler_->get_counter_value(MaliGPUActiveCy, sample);
@@ -251,24 +231,25 @@ void ArmGpuStatsDataSource::ReadGpuSampler() {
 
     ReadGpuCounters(/*gpu_counters*/);
   }
-
 }
 
 void ArmGpuStatsDataSource::ReadGpuCounters() {
   PERFETTO_LOG("ReadGpuCounters running");
 }
 
-base::WeakPtr<ArmGpuStatsDataSource> ArmGpuStatsDataSource::GetWeakPtr()
-    const {
+base::WeakPtr<ArmGpuStatsDataSource> ArmGpuStatsDataSource::GetWeakPtr() const {
   return weak_factory_.GetWeakPtr();
 }
 
 void ArmGpuStatsDataSource::Flush(FlushRequestID,
-                                    std::function<void()> callback) {
+                                  std::function<void()> callback) {
   PERFETTO_LOG("doFlush");
-  std::error_code ec = arm_sampler_->stop_sampling();
-  if (ec) {
-    PERFETTO_ELOG("stop_sampling failed by %s", ec.message().c_str());
+
+  if (!gpuinfo_counters_.empty()) {
+    std::error_code ec = arm_sampler_->stop_sampling();
+    if (ec) {
+      PERFETTO_ELOG("stop_sampling failed by %s", ec.message().c_str());
+    }
   }
   writer_->Flush(callback);
 }

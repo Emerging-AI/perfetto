@@ -42,7 +42,7 @@ if (enable_perfetto_platform_services) {
   if (enable_perfetto_traced_relay) {
     all_targets += [ "src/traced_relay:traced_relay" ]
   }
-  if (enable_perfetto_dimprof_cmd) {
+  if (enable_perfetto_dimprof_cmd && enable_perfetto_grpc) {
     all_targets += [ "src/dimensity_profiler_cmd:dimensity_profiler" ]
   }
 }

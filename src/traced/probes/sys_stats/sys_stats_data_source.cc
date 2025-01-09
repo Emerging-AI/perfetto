@@ -717,6 +717,7 @@ base::WeakPtr<SysStatsDataSource> SysStatsDataSource::GetWeakPtr() const {
 }
 
 void SysStatsDataSource::Flush(FlushRequestID, std::function<void()> callback) {
+  PERFETTO_LOG("Flush time %ld", static_cast<uint64_t>(base::GetBootTimeNs().count()));
   writer_->Flush(callback);
 }
 
