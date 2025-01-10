@@ -78,6 +78,8 @@ class DimensityProfilerCmd : public Consumer {
 
   void SignalCtrlC() { ctrl_c_evt_.Notify(); }
 
+  static void SyncRemoteWriterOnce(base::WeakPtr<DimensityProfilerCmd> weak_this);
+
  private:
   enum CloneThreadMode { kSingleExtraThread, kNewThreadPerRequest };
 
