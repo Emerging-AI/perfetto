@@ -36,6 +36,9 @@ RemoteWriter::~RemoteWriter() {
     
 }
 bool RemoteWriter::WritePacket(const TracePacket& packet) {
+    if (packet.slices().size() == 0) {
+        return true;
+    }
     std::vector<char> packet_data;
     Preamble preamble;
     size_t size = GetPreamble<protos::pbzero::Trace::kPacketFieldNumber>(
@@ -60,7 +63,6 @@ bool RemoteWriter::WritePacket(const TracePacket& packet) {
         PERFETTO_LOG("WritePacket return status not success");
         return false;
     }
-    PERFETTO_LOG("serialized_data: %d", int(packet.size()));
     return true;
 }
 } // namespace perfetto

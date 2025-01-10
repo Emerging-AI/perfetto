@@ -20,7 +20,7 @@ class RemoteServerServicer(remote_writer_pb2_grpc.TraceDataServiceServicer):
     def __init__(self):
         """"""
         # 初始化 TraceProcessor，不指定 trace 文件
-        self.tp = TraceProcessor(trace=None, addr="http://localhost:9001")
+        # self.tp = TraceProcessor(trace=None, addr="http://localhost:9001")
         self.f = open("tmp-trace", 'wb')
 
     def SendTraceData(self, request: remote_writer_pb2.TraceDataRequest, context):
@@ -33,8 +33,8 @@ class RemoteServerServicer(remote_writer_pb2_grpc.TraceDataServiceServicer):
             trace_data = request.data
             # 将数据添加到 TraceProcessor 中
             # self.tp._parse_trace(trace_data)
-            r = self.tp.http.parse(trace_data)
-            # print(f"r: {r}")
+            # r = self.tp.http.parse(trace_data)
+            print(f"r: {len(trace_data)}")
             self.f.write(trace_data)
             return remote_writer_pb2.TraceDataResponse(status="success")
         except Exception:
@@ -65,6 +65,6 @@ def thread_notify(s: RemoteServerServicer):
             continue
         c += 1
     print('start notify_eof')
-    s.tp.http.notify_eof()
+    # s.tp.http.notify_eof()
 
 serve()

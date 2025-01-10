@@ -1080,39 +1080,40 @@ int DimensityProfilerCmd::ConnectToServiceAndRun() {
   PERFETTO_LOG("after ConsumerIPCClient::Connect");
   SetupCtrlCSignalHandler();
 
-  // 每 10 毫秒调用一次 ReadBuffers
   auto weak_this = weak_factory_.GetWeakPtr();
 
-  auto sync_task = [weak_this]() {
-    if (weak_this->connected_) {
-        weak_this->consumer_endpoint_->ReadBuffers();
-      }
-  };
-  auto task = [&]() {
-      std::this_thread::sleep_for(std::chrono::milliseconds(1000));
-      auto start_time = std::chrono::steady_clock::now();  
-      while (!tracing_finshed_) {
-          task_runner_.PostTask(sync_task);
-          std::this_thread::sleep_for(std::chrono::milliseconds(remote_writer_push_ms_)); // 休眠 100 毫秒
-
-          auto current_time = std::chrono::steady_clock::now();
-          auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - start_time).count();
-
-          if (elapsed_time >= expected_duration_ms_) {
-            PERFETTO_LOG("hit expected_duration_ms_");
-            FinalizeTraceAndExit();
-          }
-      }
-  };
-
-  // // 启动线程
-  std::thread t(task);
+  if (enable_remote_writer_) {
+    PERFETTO_LOG("start remote write sync, remote_writer_push_ms_: %d", remote_writer_push_ms_);
+    task_runner_.PostDelayedTask(
+      std::bind(&DimensityProfilerCmd::SyncRemoteWriterOnce, weak_this), remote_writer_push_ms_);
+  }
   task_runner_.Run();
   tracing_finshed_ = true;
-  // 等待线程执行
-  t.join();
   PERFETTO_LOG("tracing_succeeded_");
   return tracing_succeeded_ ? 0 : 1;
+}
+
+void DimensityProfilerCmd::SyncRemoteWriterOnce(base::WeakPtr<DimensityProfilerCmd> weak_this) {
+  auto start_time = std::chrono::steady_clock::now();  
+  if (!weak_this) {
+    PERFETTO_LOG("SyncRemoteWriterOnce get empty weak_this");
+    return;
+  }
+  DimensityProfilerCmd& thiz = *weak_this;
+  if (!thiz.tracing_finshed_) {
+      thiz.task_runner_.PostDelayedTask(std::bind(&DimensityProfilerCmd::SyncRemoteWriterOnce, weak_this), thiz.remote_writer_push_ms_);
+      if (thiz.connected_) {
+        thiz.consumer_endpoint_->ReadBuffers();
+      }
+      std::this_thread::sleep_for(std::chrono::milliseconds(thiz.remote_writer_push_ms_));
+      auto current_time = std::chrono::steady_clock::now();
+      auto elapsed_time = std::chrono::duration_cast<std::chrono::milliseconds>(current_time - start_time).count();
+
+      if (elapsed_time >= thiz.expected_duration_ms_) {
+        PERFETTO_LOG("hit expected_duration_ms_");
+        thiz.FinalizeTraceAndExit();
+      }
+  }
 }
 
 void DimensityProfilerCmd::OnConnect() {
@@ -1250,10 +1251,12 @@ void DimensityProfilerCmd::OnTraceData(std::vector<TracePacket> packets, bool ha
   trace_data_timeout_armed_ = false;
 
   PERFETTO_CHECK(packet_writer_.has_value());
+  // if (!enable_remote_writer_) {
   if (!packet_writer_->WritePackets(packets)) {
     PERFETTO_ELOG("Failed to write packets");
     FinalizeTraceAndExit();
   }
+  // }
 
   // xinran: add remote_writer flags
   // TODO: add port detect
@@ -1263,7 +1266,7 @@ void DimensityProfilerCmd::OnTraceData(std::vector<TracePacket> packets, bool ha
       PERFETTO_ELOG("Failed to remote write packets");
       FinalizeTraceAndExit();
     }
-    PERFETTO_LOG("hit OnTraceData");
+    
   }
 
   if (!has_more) {
