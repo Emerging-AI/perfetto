@@ -1,0 +1,21 @@
+import("../../../../gn/test.gni")
+
+source_set("network_stats") {
+  public_deps = [
+    "../../../tracing/core",
+  ]
+  deps = [
+    "..:data_source",
+    "../../../../gn:default_deps",
+    "../../../../gn:lib_gpu_counters",
+    "../../../../include/perfetto/ext/traced",
+    "../../../../protos/perfetto/common:zero",
+    "../../../../protos/perfetto/trace:zero",
+    "../../../base",
+    "../../common:proc_utils"
+  ]
+  sources = [
+    "network_stats_data_source.cc",
+    "network_stats_data_source.h",
+  ]
+}

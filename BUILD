@@ -4668,6 +4668,7 @@ perfetto_proto_library(
         "protos/perfetto/config/profiling/java_hprof_config.proto",
         "protos/perfetto/config/profiling/perf_event_config.proto",
         "protos/perfetto/config/profiling/arm_gpu_stats_config.proto",
+        "protos/perfetto/config/profiling/network_stats_config.proto",
     ],
     visibility = [
         PERFETTO_CONFIG.proto_library_visibility,
@@ -5812,6 +5813,7 @@ perfetto_proto_library(
         "protos/perfetto/trace/profiling/profile_packet.proto",
         "protos/perfetto/trace/profiling/smaps.proto",
         "protos/perfetto/trace/profiling/arm_gpu_stats.proto",
+        "protos/perfetto/trace/profiling/network_stats.proto",
     ],
     visibility = [
         PERFETTO_CONFIG.proto_library_visibility,

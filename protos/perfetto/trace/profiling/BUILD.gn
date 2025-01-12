@@ -24,5 +24,6 @@ perfetto_proto_library("@TYPE@") {
     "smaps.proto",
     "profile_demod_packet.proto",
     "arm_gpu_stats.proto", # mtk
+    "network_stats.proto", # mtk
   ]
 }

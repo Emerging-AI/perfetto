@@ -7,6 +7,7 @@
 #include "perfetto/tracing/core/data_source_descriptor.h"
 
 #include "src/profiling/mtk/arm_gpu_stats/arm_gpu_stats_data_source.h"
+#include "src/profiling/mtk/network_stats/network_stats_data_source.h"
 
 namespace perfetto {
 namespace profiling {
@@ -56,6 +57,16 @@ DimprofdProducer::CreateDSInstance<ArmGpuStatsDataSource>(
       task_runner_, session_id, endpoint_->CreateTraceWriter(buffer_id), config));
 }
 
+template <>
+std::unique_ptr<DimprofdDataSource>
+DimprofdProducer::CreateDSInstance<NetworkStatsDataSource>(
+    TracingSessionID session_id,
+    const DataSourceConfig& config) {
+  auto buffer_id = static_cast<BufferID>(config.target_buffer());
+  return std::unique_ptr<DimprofdDataSource>(new NetworkStatsDataSource(
+      task_runner_, session_id, endpoint_->CreateTraceWriter(buffer_id), config));
+}
+
 // Another anonymous namespace. This cannot be moved into the anonymous
 // namespace on top (it would fail to compile), because the CreateDSInstance
 // methods need to be fully declared before.
@@ -78,6 +89,7 @@ constexpr DataSourceTraits Ds() {
 
 constexpr const DataSourceTraits kAllDataSources[] = {
     Ds<ArmGpuStatsDataSource>(),
+    Ds<NetworkStatsDataSource>(),
 };
 
 }  // namespace

@@ -1,0 +1,10 @@
+
+syntax = "proto2";
+
+package perfetto.protos;
+
+// Configuration for the demod profiler.
+// Next id: 2
+message NetworkStatsConfig {
+    optional uint32 network_period_ms = 1;
+}

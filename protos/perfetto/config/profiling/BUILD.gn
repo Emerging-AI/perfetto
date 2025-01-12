@@ -22,5 +22,6 @@ perfetto_proto_library("@TYPE@") {
     "perf_event_config.proto",
     "demod_config.proto",
     "arm_gpu_stats_config.proto",
+    "network_stats_config.proto",
   ]
 }

@@ -43,6 +43,7 @@ source_set("daemon") {
     "../../tracing/core",
     "../../tracing/ipc/producer",
     "arm_gpu_stats",
+    "network_stats",
   ]
   public_deps = [
     "../../../protos/perfetto/config/profiling:cpp",
