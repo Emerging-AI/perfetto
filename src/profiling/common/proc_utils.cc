@@ -186,8 +186,8 @@ bool GetCmdlineForPID(pid_t pid, std::string* name) {
   }
 
   if (rd == 0) {
-    PERFETTO_DLOG("Empty cmdline for %" PRIdMAX ". Skipping.",
-                  static_cast<intmax_t>(pid));
+    // PERFETTO_DLOG("Empty cmdline for %" PRIdMAX ". Skipping.",
+    //              static_cast<intmax_t>(pid));
     return false;
   }
 
