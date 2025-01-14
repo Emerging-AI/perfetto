@@ -283,13 +283,13 @@ void ArmGpuStatsDataSource::ReadGpuFreqV2(
   if (!fd && !gpufreq_error_logged_) {
     gpufreq_error_logged_ = true;
     PERFETTO_PLOG("Failed to open %s", gpu_freq_path.c_str());
-    arm_gpu_stats->add_gpufreq_hz(0);
+    arm_gpu_stats->add_gpufreq_v2_hz(0);
     return;
   }
 
   size_t rsize = ReadFile(&fd, gpu_freq_path.c_str());
   if (!rsize) {
-    arm_gpu_stats->add_gpufreq_hz(0);
+    arm_gpu_stats->add_gpufreq_v2_hz(0);
     return;
   }
 
@@ -309,14 +309,14 @@ void ArmGpuStatsDataSource::ReadGpuFreqV2(
         std::string maybe_freq = std::string(words.cur_token())
                                      .substr(0, words.cur_token_size() - 1);
         auto value = static_cast<uint64_t>(strtoll(maybe_freq.c_str(), nullptr, 10));
-        arm_gpu_stats->add_gpufreq_hz(value);
+        arm_gpu_stats->add_gpufreq_v2_hz(value);
         return;
       }
     }
   }
   // extract failed
   PERFETTO_PLOG("Failed to extract %s", gpu_freq_path.c_str());
-  arm_gpu_stats->add_gpufreq_hz(0);
+  arm_gpu_stats->add_gpufreq_v2_hz(0);
 }
 
 base::WeakPtr<ArmGpuStatsDataSource> ArmGpuStatsDataSource::GetWeakPtr() const {

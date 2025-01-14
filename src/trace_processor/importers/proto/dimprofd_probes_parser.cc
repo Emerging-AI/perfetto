@@ -51,6 +51,16 @@ void DimprofdProbesParser::ParseArmGpuStats(int64_t ts, ConstBytes blob) {
     context_->event_tracker->PushCounter(
         ts, value, track);
   }
+
+  for (auto it = arm_gpu_stats.gpufreq_v2_hz(); it; ++it) {
+    auto value = static_cast<double>(*it);
+    PERFETTO_DLOG("\nArmGpu freq value %f", value);
+    StringId name = context_->storage->InternString("mali0_freq_v2");
+    TrackId track = context_->track_tracker->InternGlobalCounterTrack(
+        TrackTracker::Group::kGpu, name);
+    context_->event_tracker->PushCounter(
+        ts, value, track);
+  }
 }
 
 }  // namespace trace_processor
