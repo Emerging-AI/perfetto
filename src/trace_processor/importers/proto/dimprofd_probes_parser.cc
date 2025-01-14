@@ -32,7 +32,7 @@ void DimprofdProbesParser::ParseArmGpuStats(int64_t ts, ConstBytes blob) {
       continue;
     }
 
-    PERFETTO_LOG("\nArmGpuInfo %zu value %llu", key, gi.int_value());
+    PERFETTO_DLOG("\nArmGpuInfo %zu value %llu", key, gi.int_value());
 
     // hwcpipe counters
     TrackId track = context_->track_tracker->InternGlobalCounterTrack(
@@ -40,6 +40,16 @@ void DimprofdProbesParser::ParseArmGpuStats(int64_t ts, ConstBytes blob) {
     context_->event_tracker->PushCounter(
         ts, static_cast<double>(gi.int_value()), track);
 
+  }
+
+  for (auto it = arm_gpu_stats.gpufreq_hz(); it; ++it) {
+    auto value = static_cast<double>(*it);
+    PERFETTO_DLOG("\nArmGpu freq value %f", value);
+    StringId name = context_->storage->InternString("mali0_freq");
+    TrackId track = context_->track_tracker->InternGlobalCounterTrack(
+        TrackTracker::Group::kGpu, name);
+    context_->event_tracker->PushCounter(
+        ts, value, track);
   }
 }
 

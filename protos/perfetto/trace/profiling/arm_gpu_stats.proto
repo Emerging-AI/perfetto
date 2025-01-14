@@ -15,4 +15,19 @@ message ArmGpuStats {
     // optional uint64 value = 2;
   };
   repeated ArmGpuInfoValue arm_gpuinfo = 1;
+
+  // The time at which we finish collecting this set of samples;
+  // the top-level packet timestamp is the time at which
+  // we begin collection.
+  optional uint64 collection_end_timestamp = 2;
+
+  // mtk gpu current frequency from
+  // /proc/gpufreq/gpufreq_var_dump in Hz
+  // One entry per gpu. Report 0 for offline gpu
+  repeated uint64 gpufreq_hz = 3;
+
+  // mtk gpu current frequency from
+  // /proc/gpufreqv2/gpufreq_status in Hz.
+  // One entry per gpu. Report 0 for offline gpu
+  repeated uint64 gpufreq_v2_hz = 4;
 }
