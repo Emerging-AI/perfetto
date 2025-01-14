@@ -5,11 +5,14 @@
 #include <map>
 #include <string>
 
+#include "perfetto/ext/base/paged_memory.h"
+#include "perfetto/ext/base/scoped_file.h"
 #include "perfetto/ext/base/weak_ptr.h"
 #include "perfetto/ext/tracing/core/basic_types.h"
 #include "perfetto/ext/tracing/core/trace_writer.h"
 #include "perfetto/tracing/core/data_source_config.h"
 #include "src/profiling/mtk/dimprofd_data_source.h"
+#include "protos/perfetto/trace/profiling/arm_gpu_stats.pbzero.h"
 #include "src/profiling/mtk/arm_gpu_stats/arm_gpu_counters.h"
 
 #include <device/product_id.hpp>
@@ -46,7 +49,12 @@ class ArmGpuStatsDataSource : public DimprofdDataSource {
   base::WeakPtr<ArmGpuStatsDataSource> GetWeakPtr() const;
 
   // Virtual for testing.
-  virtual std::string ReadFile(std::string path);
+  virtual base::ScopedDir OpenDirAndLogOnErrorOnce(const std::string& dir_path,
+                                                   bool* already_logged);
+
+ protected:
+  bool gpufreq_error_logged_ = false;
+  bool gpufreqv2_error_logged_ = false;
 
  private:
   struct CStrCmp {
@@ -57,17 +65,22 @@ class ArmGpuStatsDataSource : public DimprofdDataSource {
 
   static void Tick(base::WeakPtr<ArmGpuStatsDataSource>);
 
-  void ReadGpuSampler();   // Virtual for testing.
-  void ReadGpuCounters();  // Virtual for testing.
+  void ReadArmGpuStats();  // Virtual for testing.
+  void ReadGpuSampler(protos::pbzero::ArmGpuStats* arm_gpu_stats);
+  void ReadGpuFreq(protos::pbzero::ArmGpuStats* arm_gpu_stats);
+  void ReadGpuFreqV2(protos::pbzero::ArmGpuStats* arm_gpu_stats);
+
+  size_t ReadFile(base::ScopedFile*, const char* path);
+
   std::unique_ptr<hwcpipe::sampler<>> arm_sampler_ = nullptr;
   std::unique_ptr<hwcpipe::sampler_config> arm_sampler_config_ = nullptr;
-  // uint32_t arm_counter_size_ = 0;
+  uint32_t tick_period_ms_ = 0;
 
+  base::PagedMemory read_buf_;
   base::TaskRunner* const task_runner_;
   std::unique_ptr<TraceWriter> writer_;
   std::map<const char*, KeyAndCounter, CStrCmp> gpuinfo_counters_;
 
-  uint32_t tick_period_ms_ = 0;
 
   base::WeakPtrFactory<ArmGpuStatsDataSource> weak_factory_;  // Keep last.
 };
