@@ -64,7 +64,14 @@ const DimprofdDataSource::Descriptor ArmGpuStatsDataSource::descriptor = {
     /* fill_descriptor_func */ nullptr,
 };
 
-ArmGpuStatsDataSource::~ArmGpuStatsDataSource() = default;
+ArmGpuStatsDataSource::~ArmGpuStatsDataSource() {
+   if (!gpuinfo_counters_.empty()) {
+    std::error_code ec = arm_sampler_->stop_sampling();
+    if (ec) {
+      PERFETTO_ELOG("stop_sampling failed by %s", ec.message().c_str());
+    }
+  }
+}
 
 ArmGpuStatsDataSource::ArmGpuStatsDataSource(
     base::TaskRunner* task_runner,
@@ -327,12 +334,12 @@ void ArmGpuStatsDataSource::Flush(FlushRequestID,
                                   std::function<void()> callback) {
   PERFETTO_DLOG("doFlush");
 
-  if (!gpuinfo_counters_.empty()) {
-    std::error_code ec = arm_sampler_->stop_sampling();
-    if (ec) {
-      PERFETTO_ELOG("stop_sampling failed by %s", ec.message().c_str());
-    }
-  }
+  // if (!gpuinfo_counters_.empty()) {
+  //   std::error_code ec = arm_sampler_->stop_sampling();
+  //   if (ec) {
+  //     PERFETTO_ELOG("stop_sampling failed by %s", ec.message().c_str());
+  //   }
+  // }
   writer_->Flush(callback);
 }
 

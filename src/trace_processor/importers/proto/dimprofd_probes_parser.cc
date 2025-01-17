@@ -40,7 +40,7 @@ void DimprofdProbesParser::ParseArmGpuStats(int64_t ts, ConstBytes blob) {
     context_->event_tracker->PushCounter(
         ts, static_cast<double>(gi.int_value()), track);
 
-  }
+  } 
 
   for (auto it = arm_gpu_stats.gpufreq_hz(); it; ++it) {
     auto value = static_cast<double>(*it);
