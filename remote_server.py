@@ -23,6 +23,16 @@ class RemoteServerServicer(remote_writer_pb2_grpc.TraceDataServiceServicer):
         # self.tp = TraceProcessor(trace=None, addr="http://localhost:9001")
         self.f = open("tmp-trace", 'wb')
 
+    def SendTraceDataStream(self, request_iterator, context):
+        """"""
+        total_size = 0
+        for trace_data_request in request_iterator:
+            data = trace_data_request.data
+            size = trace_data_request.size
+            total_size += size
+            print(f"Received data slice of size {size}")
+        return remote_writer_pb2.TraceDataResponse(status="success")
+
     def SendTraceData(self, request: remote_writer_pb2.TraceDataRequest, context):
         """"""
         global STARTED

@@ -2,11 +2,14 @@ syntax = "proto3";
 package perfetto.protos;
 service TraceDataService {
   rpc SendTraceData (TraceDataRequest) returns (TraceDataResponse);
+  rpc SendTraceDataStream (stream TraceDataRequest) returns (TraceDataResponse) {}
 }
+
 message TraceDataRequest {
   bytes data = 1;
   int32 size = 2;
 }
+
 message TraceDataResponse {
   string status = 1;
 }

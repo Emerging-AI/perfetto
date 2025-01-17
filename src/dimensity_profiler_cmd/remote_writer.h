@@ -19,6 +19,7 @@
 #include <stdio.h>
 #include <grpcpp/grpcpp.h>
 #include "perfetto/ext/tracing/core/trace_packet.h"
+#include "protos/perfetto/remote_writer/remote_writer.pb.h"
 #include "protos/perfetto/remote_writer/remote_writer.grpc.pb.h"
 namespace perfetto {
 class RemoteWriter {
@@ -33,12 +34,28 @@ class RemoteWriter {
     }
     return true;
   }
+  bool StreamWritePackets(const std::vector<TracePacket>& packets, bool has_more) {
+    for (const TracePacket& packet : packets) {
+      if (!StreamWritePacket(packet, has_more)) {
+        return false;
+      }
+    }
+    return true;
+  }
   bool WritePacket(const TracePacket& packet);
+  bool StreamWritePacket(const TracePacket& packet, bool has_more);
+  std::unique_ptr<grpc::ClientWriter<protos::TraceDataRequest>> NewStreamWriter();
+  std::shared_ptr<grpc::ClientContext> NewStreamContext();
+  std::shared_ptr<protos::TraceDataResponse> NewStreamResponse();
  private:
   std::string host_;
   int port_;
   std::shared_ptr<grpc::ChannelInterface> channel_;
   std::unique_ptr<protos::TraceDataService::Stub> stub_;
+  std::unique_ptr<grpc::ClientWriter<protos::TraceDataRequest>> senddata_stream_writer_;
+  std::shared_ptr<grpc::ClientContext> stream_context_;
+  std::shared_ptr<protos::TraceDataResponse> stream_response_;
 };
+
 }  // namespace perfetto
 #endif  // SRC_PERFETTO_CMD_REMOTE_WRITER_H_
