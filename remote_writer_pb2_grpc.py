@@ -3,7 +3,7 @@
 import grpc
 import warnings
 
-import remote_writer_pb2 as remote__writer__pb2
+import remote_writer_pb2 as perfetto_dot_remote__writer_dot_remote__writer__pb2
 
 GRPC_GENERATED_VERSION = '1.68.0'
 GRPC_VERSION = grpc.__version__
@@ -18,7 +18,7 @@ except ImportError:
 if _version_not_supported:
     raise RuntimeError(
         f'The grpc package installed is at version {GRPC_VERSION},'
-        + f' but the generated code in remote_writer_pb2_grpc.py depends on'
+        + f' but the generated code in perfetto/remote_writer/remote_writer_pb2_grpc.py depends on'
         + f' grpcio>={GRPC_GENERATED_VERSION}.'
         + f' Please upgrade your grpc module to grpcio>={GRPC_GENERATED_VERSION}'
         + f' or downgrade your generated code using grpcio-tools<={GRPC_VERSION}.'
@@ -36,8 +36,13 @@ class TraceDataServiceStub(object):
         """
         self.SendTraceData = channel.unary_unary(
                 '/perfetto.protos.TraceDataService/SendTraceData',
-                request_serializer=remote__writer__pb2.TraceDataRequest.SerializeToString,
-                response_deserializer=remote__writer__pb2.TraceDataResponse.FromString,
+                request_serializer=perfetto_dot_remote__writer_dot_remote__writer__pb2.TraceDataRequest.SerializeToString,
+                response_deserializer=perfetto_dot_remote__writer_dot_remote__writer__pb2.TraceDataResponse.FromString,
+                _registered_method=True)
+        self.SendTraceDataStream = channel.stream_unary(
+                '/perfetto.protos.TraceDataService/SendTraceDataStream',
+                request_serializer=perfetto_dot_remote__writer_dot_remote__writer__pb2.TraceDataRequest.SerializeToString,
+                response_deserializer=perfetto_dot_remote__writer_dot_remote__writer__pb2.TraceDataResponse.FromString,
                 _registered_method=True)
 
 
@@ -50,13 +55,24 @@ class TraceDataServiceServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def SendTraceDataStream(self, request_iterator, context):
+        """Missing associated documentation comment in .proto file."""
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_TraceDataServiceServicer_to_server(servicer, server):
     rpc_method_handlers = {
             'SendTraceData': grpc.unary_unary_rpc_method_handler(
                     servicer.SendTraceData,
-                    request_deserializer=remote__writer__pb2.TraceDataRequest.FromString,
-                    response_serializer=remote__writer__pb2.TraceDataResponse.SerializeToString,
+                    request_deserializer=perfetto_dot_remote__writer_dot_remote__writer__pb2.TraceDataRequest.FromString,
+                    response_serializer=perfetto_dot_remote__writer_dot_remote__writer__pb2.TraceDataResponse.SerializeToString,
+            ),
+            'SendTraceDataStream': grpc.stream_unary_rpc_method_handler(
+                    servicer.SendTraceDataStream,
+                    request_deserializer=perfetto_dot_remote__writer_dot_remote__writer__pb2.TraceDataRequest.FromString,
+                    response_serializer=perfetto_dot_remote__writer_dot_remote__writer__pb2.TraceDataResponse.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -84,8 +100,35 @@ class TraceDataService(object):
             request,
             target,
             '/perfetto.protos.TraceDataService/SendTraceData',
-            remote__writer__pb2.TraceDataRequest.SerializeToString,
-            remote__writer__pb2.TraceDataResponse.FromString,
+            perfetto_dot_remote__writer_dot_remote__writer__pb2.TraceDataRequest.SerializeToString,
+            perfetto_dot_remote__writer_dot_remote__writer__pb2.TraceDataResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def SendTraceDataStream(request_iterator,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.stream_unary(
+            request_iterator,
+            target,
+            '/perfetto.protos.TraceDataService/SendTraceDataStream',
+            perfetto_dot_remote__writer_dot_remote__writer__pb2.TraceDataRequest.SerializeToString,
+            perfetto_dot_remote__writer_dot_remote__writer__pb2.TraceDataResponse.FromString,
             options,
             channel_credentials,
             insecure,
