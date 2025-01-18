@@ -32,13 +32,21 @@ void DimprofdProbesParser::ParseArmGpuStats(int64_t ts, ConstBytes blob) {
       continue;
     }
 
-    PERFETTO_DLOG("\nArmGpuInfo %zu value %llu", key, gi.int_value());
 
     // hwcpipe counters
     TrackId track = context_->track_tracker->InternGlobalCounterTrack(
         TrackTracker::Group::kGpu, arm_gpuinfo_strs_id_[key]);
-    context_->event_tracker->PushCounter(
-        ts, static_cast<double>(gi.int_value()), track);
+    // gi.val_type just equal 0 or 1
+    PERFETTO_DLOG("\nArmGpuInfo val_type %u ", gi.val_type());
+    if (gi.val_type() == 0) {
+      PERFETTO_DLOG("\nArmGpuInfo %zu int value %llu", key, gi.int_value());
+      context_->event_tracker->PushCounter(
+          ts, static_cast<double>(gi.int_value()), track);
+    } else {
+      PERFETTO_DLOG("\nArmGpuInfo %zu double value %f", key, gi.double_value());
+      context_->event_tracker->PushCounter(
+          ts, gi.double_value(), track);
+    }
 
   } 
 

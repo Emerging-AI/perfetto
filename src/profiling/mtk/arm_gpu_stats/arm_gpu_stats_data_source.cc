@@ -215,17 +215,22 @@ void ArmGpuStatsDataSource::ReadGpuSampler(
         PERFETTO_ELOG("sample %s failed by %s", cur_counter.str,
                       ec.message().c_str());
       } else {
-        PERFETTO_DLOG("print_sample_value %s %s", cur_counter.str,
+        PERFETTO_DLOG("print_sample_value: %d %s %s", cur_counter.id, cur_counter.str,
                       get_sample_value(sample).c_str());
         auto* arm_gpuinfo = arm_gpu_stats->add_arm_gpuinfo();
         arm_gpuinfo->set_key(
             static_cast<protos::pbzero::ArmGpuCounters>(cur_counter.id));
+        
         switch (sample.type) {
           case hwcpipe::counter_sample::type::uint64: {
+            PERFETTO_DLOG("cur int value %ld", sample.value.uint64);
+            arm_gpuinfo->set_val_type(0);
             arm_gpuinfo->set_int_value(sample.value.uint64);
             break;
           }
           case hwcpipe::counter_sample::type::float64: {
+            PERFETTO_DLOG("cur double value %f", sample.value.float64);
+            arm_gpuinfo->set_val_type(1);
             arm_gpuinfo->set_double_value(sample.value.float64);
             break;
           }
@@ -311,7 +316,7 @@ void ArmGpuStatsDataSource::ReadGpuFreqV2(
           continue;
 
         words.Next();
-        PERFETTO_LOG("the token after Freq: %s", words.cur_token());  // 26000,
+        // PERFETTO_DLOG("the token after Freq: %s", words.cur_token());  // 26000,
         // Strip suffix ",".
         std::string maybe_freq = std::string(words.cur_token())
                                      .substr(0, words.cur_token_size() - 1);
