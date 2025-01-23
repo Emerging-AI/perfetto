@@ -242,6 +242,7 @@ void DimprofdProducer::StopDataSource(DataSourceInstanceID instance_id){
   // as soon as the trace is considered finished (i.e. all data source stops
   // were acked), and therefore the kill would race against the tracefs
   // cleanup.
+  data_source->started = false;
   endpoint_->NotifyDataSourceStopped(instance_id);
 
 };
