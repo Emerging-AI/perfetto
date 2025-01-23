@@ -21,6 +21,7 @@ class DimprofdProbesParser {
   explicit DimprofdProbesParser(TraceProcessorContext*);
 
   void ParseArmGpuStats(int64_t ts, ConstBytes);
+  void ParseNetworkStats(int64_t ts, ConstBytes);
 
   TraceProcessorContext* const context_;
 

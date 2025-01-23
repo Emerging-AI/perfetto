@@ -14,6 +14,7 @@ using perfetto::protos::pbzero::TracePacket;
 DimprofdProbesModule::DimprofdProbesModule(TraceProcessorContext* context)
     : parser_(context) {
   RegisterForField(TracePacket::kArmGpuStatsFieldNumber, context);
+  RegisterForField(TracePacket::kNetworkStatsFieldNumber, context);
 }
 
 void DimprofdProbesModule::ParseTracePacketData(
@@ -24,6 +25,9 @@ void DimprofdProbesModule::ParseTracePacketData(
   switch (field_id) {
     case TracePacket::kArmGpuStatsFieldNumber:
       parser_.ParseArmGpuStats(ts, decoder.arm_gpu_stats());
+      return;
+    case TracePacket::kNetworkStatsFieldNumber:
+      parser_.ParseNetworkStats(ts, decoder.network_stats());
       return;
   }
 }
