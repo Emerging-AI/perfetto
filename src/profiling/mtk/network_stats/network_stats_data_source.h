@@ -14,8 +14,6 @@
 #include "perfetto/tracing/core/data_source_config.h"
 #include "src/profiling/mtk/dimprofd_data_source.h"
 
-#include <device/product_id.hpp>
-
 #include <iomanip>
 #include <unistd.h>
 

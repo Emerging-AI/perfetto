@@ -1,7 +1,7 @@
 
 #include "src/profiling/mtk/network_stats/network_stats_data_source.h"
 
-#include "src/profiling/common/proc_utils.h"
+// #include "src/profiling/common/proc_utils.h"
 
 #include <optional>
 #include <string>
@@ -18,9 +18,6 @@
 #include "protos/perfetto/trace/trace_packet.pbzero.h"
 
 namespace perfetto {
-
-// using protos::pbzero::ArmGpuStatsConfig;
-
 namespace profiling {
 
 namespace {
@@ -59,7 +56,7 @@ NetworkStatsDataSource::NetworkStatsDataSource(
   NetworkStatsConfig::Decoder cfg(ds_config.network_stats_config_raw());
   tick_period_ms_ = ClampTo10Ms(cfg.network_period_ms(), "network_period_ms");
 
-  // TODO(xr): paramalize
+  // TODO(xinran): paramalize
   cmdlines_ = {"com.taobao.taobao"};
   // cmdlines_ = {"com.tencent.mm"};
 }
@@ -92,7 +89,8 @@ void NetworkStatsDataSource::ReadNetworkStats() {
 
   // Get Specific PID
   pids_.clear();
-  FindPidsForCmdlines(cmdlines_, &pids_);
+  pids_.insert(0);  // TODO(xinran): trick for read proc without PID
+  // FindPidsForCmdlines(cmdlines_, &pids_);
   // glob_aware::FindPidsForCmdlinePatterns(cmdlines_, &pids_);
 
   // read proc/PID/net/[tcp, tcp6, udp, udp6]
@@ -120,7 +118,8 @@ void NetworkStatsDataSource::ReadNetworkStats() {
 
 void NetworkStatsDataSource::ReadNetworkInfo(const std::string& protocol, const pid_t pid,
                                              uint64_t& tb, uint64_t& rb){
-  std::string content = ReadFile("/proc/" + std::to_string(pid) + "/net/" + protocol);
+  // std::string content = ReadFile("/proc/" + std::to_string(pid) + "/net/" + protocol);
+  std::string content = ReadFile("/proc/net/" + protocol);
   if (content.empty()) {
     return;
   }

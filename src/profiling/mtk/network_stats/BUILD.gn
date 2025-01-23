@@ -7,12 +7,10 @@ source_set("network_stats") {
   deps = [
     "..:data_source",
     "../../../../gn:default_deps",
-    "../../../../gn:lib_gpu_counters",
     "../../../../include/perfetto/ext/traced",
     "../../../../protos/perfetto/common:zero",
     "../../../../protos/perfetto/trace:zero",
     "../../../base",
-    "../../common:proc_utils"
   ]
   sources = [
     "network_stats_data_source.cc",
